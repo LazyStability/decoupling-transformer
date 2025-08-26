@@ -963,3 +963,30 @@ create_fast_downward_library(
         algorithms/sccs
     DEPENDENCY_ONLY
 )
+
+### CHILS
+message(STATUS "Building CHILS...")
+include(ExternalProject)
+ExternalProject_Add(
+    chils
+    PREFIX "CHILS"
+    # FIX: Use patched version here, because the original makefile uses `/bin/bash` which does not exist on my system.
+    GIT_REPOSITORY git@github.com:LazyStability/CHILS.git
+    # GIT_REPOSITORY git@github.com:KennethLangedal/CHILS.git
+    GIT_TAG origin/main
+    CONFIGURE_COMMAND ""
+    # FIX: This is not encouraged practise, but otherwise the make file will not be found.
+    BUILD_IN_SOURCE true
+    # BUILD_IN_SOURCE 0
+    BUILD_COMMAND "make"
+    INSTALL_COMMAND ""
+)
+add_dependencies(downward chils)
+
+
+# FIX: Not 100% sure on the linking done here, but it works.
+target_include_directories(decoupling INTERFACE ${downward_BINARY_DIR}/CHILS/src/chils/include)
+target_include_directories(decoupling INTERFACE ${downward_BINARY_DIR}/CHILS/src/chils/include)
+
+# target_link_libraries(downward INTERFACE ${downward_BINARY_DIR}/CHILS/src/chils/libCHILS.a)
+# target_link_libraries(downward INTERFACE ${downward_BINARY_DIR}/CHILS/src/chils/libCHILS.a)
