@@ -1,0 +1,3 @@
+[submodule "src/search/ext/chills"]
+	path = src/search/ext/chills
+	url = git@github.com:LazyStability/CHILS.git

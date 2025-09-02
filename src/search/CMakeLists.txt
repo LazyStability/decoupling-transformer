@@ -970,14 +970,13 @@ include(ExternalProject)
 ExternalProject_Add(
     chils
     PREFIX "CHILS"
+
     # FIX: Use patched version here, because the original makefile uses `/bin/bash` which does not exist on my system.
-    GIT_REPOSITORY git@github.com:LazyStability/CHILS.git
-    # GIT_REPOSITORY git@github.com:KennethLangedal/CHILS.git
-    GIT_TAG origin/main
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ext/chills
+    # CONFIGURE_COMMAND "autoreconf ${CMAKE_CURRENT_SOURCE_DIR}/ext/chills"
+    # FIX: without this it will not work
     CONFIGURE_COMMAND ""
-    # FIX: This is not encouraged practise, but otherwise the make file will not be found.
-    BUILD_IN_SOURCE true
-    # BUILD_IN_SOURCE 0
+    BUILD_IN_SOURCE 1
     BUILD_COMMAND "make"
     INSTALL_COMMAND ""
 )
