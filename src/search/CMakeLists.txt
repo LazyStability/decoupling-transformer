@@ -970,23 +970,19 @@ include(ExternalProject)
 ExternalProject_Add(
     chils
     PREFIX "CHILS"
-    # FIX: Use patched version here, because the original makefile uses `/bin/bash` which does not exist on my system.
-    GIT_REPOSITORY git@github.com:LazyStability/CHILS.git
-    # GIT_REPOSITORY git@github.com:KennethLangedal/CHILS.git
-    GIT_TAG origin/main
+    SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ext/chils"
+
     CONFIGURE_COMMAND ""
-    # FIX: This is not encouraged practise, but otherwise the make file will not be found.
-    BUILD_IN_SOURCE true
-    # BUILD_IN_SOURCE 0
-    BUILD_COMMAND "make"
-    INSTALL_COMMAND ""
+
+    BUILD_IN_SOURCE 0
+    BUILD_COMMAND make -C <SOURCE_DIR>
+
+    INSTALL_COMMAND install <SOURCE_DIR>/libCHILS.a <SOURCE_DIR>/include/chils.h <INSTALL_DIR>
 )
-add_dependencies(downward chils)
+add_dependencies(decoupling chils)
 
 
 # FIX: Not 100% sure on the linking done here, but it works.
-target_include_directories(decoupling INTERFACE ${downward_BINARY_DIR}/CHILS/src/chils/include)
-target_include_directories(decoupling INTERFACE ${downward_BINARY_DIR}/CHILS/src/chils/include)
-
-# target_link_libraries(downward INTERFACE ${downward_BINARY_DIR}/CHILS/src/chils/libCHILS.a)
-# target_link_libraries(downward INTERFACE ${downward_BINARY_DIR}/CHILS/src/chils/libCHILS.a)
+target_include_directories(decoupling INTERFACE ${downward_BINARY_DIR}/CHILS)
+target_link_libraries(decoupling INTERFACE ${downward_BINARY_DIR}/CHILS/libCHILS.a)
+# target_link_libraries(decoupling INTERFACE ${downward_BINARY_DIR}/CHILS/chils.h)
