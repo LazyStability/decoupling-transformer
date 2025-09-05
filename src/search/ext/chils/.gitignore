@@ -1,0 +1,6 @@
+.vscode/*
+bin/*
+CHILS
+libCHILS.a
+
+env/*

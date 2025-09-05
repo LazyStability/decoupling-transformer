@@ -1,0 +1,74 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        cc: [gcc, clang]
+        exclude:
+          # Clang on Windows requires extra setup to work with make
+          # and is not included in this basic setup.
+          - os: windows-latest
+            cc: clang
+
+    steps:
+    - name: Check out repository code
+      uses: actions/checkout@v4
+
+    - name: Install Dependencies
+      shell: bash
+      run: |
+        if [ "$RUNNER_OS" == "Linux" ]; then
+          if [ "${{ matrix.cc }}" == "clang" ]; then
+            sudo apt-get update
+            sudo apt-get install -y libomp-dev
+          fi
+        elif [ "$RUNNER_OS" == "macOS" ]; then
+          if [ "${{ matrix.cc }}" == "gcc" ]; then
+            brew install gcc
+          else # clang
+            brew install llvm libomp
+          fi
+        elif [ "$RUNNER_OS" == "Windows" ]; then
+          choco install make
+          choco install mingw
+        fi
+
+    - name: Build project
+      shell: bash
+      run: |
+        if [[ "${{ matrix.cc }}" == "clang" && "$RUNNER_OS" == "macOS" ]]; then
+          # Clang on macOS needs special flags for OpenMP
+          make CC=$(brew --prefix llvm)/bin/clang CFLAGS="-Xpreprocessor -I$(brew --prefix libomp)/include"
+        elif [[ "${{ matrix.cc }}" == "gcc" && "$RUNNER_OS" == "macOS" ]]; then
+          # Use the versioned GCC from Homebrew
+          make CC=$(find $(brew --prefix gcc)/bin -name "gcc-*" | head -n 1)
+        else
+          # Default for Linux (gcc/clang) and Windows (gcc)
+          make CC=${{ matrix.cc }}
+        fi
+
+    - name: Test project (run executable)
+      shell: bash
+      run: |
+        printf "3 2 10\n15 3\n15 3\n20 1 2\n" > test.gr
+        if [ "$RUNNER_OS" == "Windows" ]; then
+          ./CHILS.exe -g test.gr -t 1.0
+        else
+          ./CHILS -g test.gr -t 1.0
+        fi
+
+    - name: Clean up
+      run: | 
+        make clean
+        rm test.gr
+
