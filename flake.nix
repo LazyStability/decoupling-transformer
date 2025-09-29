@@ -46,6 +46,8 @@
                     clang-tools
                     cmake
                     cppcheck
+                    uncrustify
+                    mprocs
                     # codespell
                     # gtest
                     # lcov
