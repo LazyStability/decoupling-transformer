@@ -73,7 +73,7 @@ MWISFactoring::MWISFactoring(const plugins::Options& opts)
             log << "maximize conclusive leaf mobility." << endl;
             break;
         default:
-            log << "ERROR: unknown LP factoring strategy." << endl;
+            log << "ERROR: unknown MWIS factoring strategy." << endl;
             exit_with(utils::ExitCode::SEARCH_INPUT_ERROR);
         }
         log << "WARNING: This factoring strategy is PRELIMINARY..."
