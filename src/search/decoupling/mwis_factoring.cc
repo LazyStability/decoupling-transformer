@@ -66,8 +66,7 @@ MWISFactoring::MWISFactoring(const plugins::Options& opts)
             log << "maximize leaf mobility (sum)." << endl;
             break;
         case WMIS_STRATEGY::MCL:
-            log << "maximize number of mobile conclusive leaves."
-                << endl;
+            log << "maximize number of mobile conclusive leaves." << endl;
             break;
         case WMIS_STRATEGY::MCM:
             log << "maximize conclusive leaf mobility." << endl;
@@ -76,8 +75,7 @@ MWISFactoring::MWISFactoring(const plugins::Options& opts)
             log << "ERROR: unknown MWIS factoring strategy." << endl;
             exit_with(utils::ExitCode::SEARCH_INPUT_ERROR);
         }
-        log << "WARNING: This factoring strategy is PRELIMINARY..."
-            << endl
+        log << "WARNING: This factoring strategy is PRELIMINARY..." << endl
             << "In most cases, it is superseded by the LP factoring "
                "that is based on CPLEX."
             << endl
@@ -103,18 +101,16 @@ inline double get_log(double num_actions) {
 void MWISFactoring::add_leaf_intersection_edges(
     Graph& graph, const vector<vector<size_t>>& var_to_p_leaves) const {
     // non-empty intersection between potential leaves
-    vector<vector<bool>> pleaf_intersect(potential_leaf_nodes.size() -
-                                         1);
+    vector<vector<bool>> pleaf_intersect(potential_leaf_nodes.size() - 1);
     for (size_t i = 0; i < pleaf_intersect.size(); ++i) {
-        pleaf_intersect[i].resize(potential_leaf_nodes.size() - i - 1,
-                                  false);
+        pleaf_intersect[i].resize(potential_leaf_nodes.size() - i - 1, false);
     }
     for (int var = 0; var < (int)task->get_num_variables(); ++var) {
         for (size_t pot_leaf_1 : var_to_p_leaves[var]) {
             for (size_t pot_leaf_2 : var_to_p_leaves[var]) {
                 if (pot_leaf_1 < pot_leaf_2) {
-                    pleaf_intersect[pot_leaf_1]
-                                   [pot_leaf_2 - pot_leaf_1 - 1] = true;
+                    pleaf_intersect[pot_leaf_1][pot_leaf_2 - pot_leaf_1 - 1] =
+                        true;
                 }
             }
         }
@@ -146,13 +142,13 @@ void MWISFactoring::add_outside_pre_var_edges(
         }
     }
     for (size_t i = 0; i < potential_leaf_nodes.size(); ++i) {
-        // TODO avoid this
+        // TODO: avoid this
         utils::sort_unique(graph[i]);
     }
 }
 
-bool MWISFactoring::is_as_leaf_irrelevant(
-    const ActionSchema& as, const PotentialLeaf& leaf) const {
+bool MWISFactoring::is_as_leaf_irrelevant(const ActionSchema& as,
+                                          const PotentialLeaf& leaf) const {
     assert(!has_as_pre_or_eff_on_leaf(as, leaf));
     vector<bool> is_leaf_pre_var(task->get_num_variables(), false);
     for (auto as_id : leaf.action_schemes) {
@@ -198,8 +194,8 @@ bool MWISFactoring::is_as_leaf_conclusive(const ActionSchema& as,
     return true;
 }
 
-bool MWISFactoring::has_as_pre_or_eff_on_leaf(
-    const ActionSchema& as, const PotentialLeaf& leaf) {
+bool MWISFactoring::has_as_pre_or_eff_on_leaf(const ActionSchema& as,
+                                              const PotentialLeaf& leaf) {
     for (int lvar : leaf.vars) {
         for (int pvar : as.pre_vars) {
             if (lvar == pvar) {
@@ -219,9 +215,8 @@ bool MWISFactoring::has_as_pre_or_eff_on_leaf(
     return false;
 }
 
-void MWISFactoring::construct_graph_conclusive_leaves(
-    Graph& /*graph*/) {
-    // TODO implement this
+void MWISFactoring::construct_graph_conclusive_leaves(Graph& /*graph*/) {
+    // TODO: implement this
     cerr << "not implemented in mwis_factoring.cc" << endl;
     utils::exit_with(utils::ExitCode::SEARCH_CRITICAL_ERROR);
 
@@ -453,8 +448,7 @@ void MWISFactoring::construct_graph(Graph& graph) {
         return;
     }
 
-    if (static_cast<int>(potential_leaf_nodes.size()) <
-        min_number_leaves) {
+    if (static_cast<int>(potential_leaf_nodes.size()) < min_number_leaves) {
         log << "Only " << potential_leaf_nodes.size()
             << " potential leaves left, but minimum number of "
                "leaves is "
@@ -483,30 +477,30 @@ void MWISFactoring::construct_graph(Graph& graph) {
     add_outside_pre_var_edges(graph, var_to_p_leaves);
 }
 
-vector<int>
-MWISFactoring::solve_wmis(const Graph& graph,
-                          const vector<double>& weights,
-                          const utils::CountdownTimer& timer) {
-    vector<int> independent_set;
+vector<int> MWISFactoring::solve_wmis(const Graph& graph,
+                                      const vector<double>& weights,
+                                      const utils::CountdownTimer& timer) {
+    // TODO: Use CHILS solver
 
-    utils::g_log << "Computing max weighted independent set..."
-                 << flush;
-    double weight = max_cliques::compute_max_weighted_independent_set(
-        graph, weights, independent_set, min_number_leaves,
-        timer.get_remaining_time());
-    utils::g_log << "done!" << endl;
-
-    log << "Weight of computed independent set: " << weight << endl;
-
-    return independent_set;
+    // vector<int> independent_set;
+    //
+    // utils::g_log << "Computing max weighted independent set..."
+    //              << flush;
+    // double weight = max_cliques::compute_max_weighted_independent_set(
+    //     graph, weights, independent_set, min_number_leaves,
+    //     timer.get_remaining_time());
+    // utils::g_log << "done!" << endl;
+    //
+    // log << "Weight of computed independent set: " << weight << endl;
+    //
+    // return independent_set;
 }
 
 void MWISFactoring::compute_factoring_() {
     // successor node IDs for all graph nodes
     vector<vector<int>> graph;
 
-    if (strategy == WMIS_STRATEGY::MCL ||
-        strategy == WMIS_STRATEGY::MCM) {
+    if (strategy == WMIS_STRATEGY::MCL || strategy == WMIS_STRATEGY::MCM) {
         construct_graph_conclusive_leaves(graph);
     } else {
         construct_graph(graph);
@@ -538,8 +532,8 @@ void MWISFactoring::compute_factoring_() {
     }
 
     if (static_cast<int>(solution.size()) < min_number_leaves) {
-        log << "WARNING: no factoring found with at least "
-            << min_number_leaves << " leaves." << endl;
+        log << "WARNING: no factoring found with at least " << min_number_leaves
+            << " leaves." << endl;
         return;
     }
 
@@ -573,8 +567,7 @@ inline double compute_leaf_fact_flexibility(
             double fact_mobility = 0;
             for (size_t as_id : included_as) {
                 if (facts_to_mobility[var][val].count(as_id) > 0) {
-                    fact_mobility +=
-                        facts_to_mobility[var][val].at(as_id);
+                    fact_mobility += facts_to_mobility[var][val].at(as_id);
                 }
             }
             if (sum_fact_mobility[var][val] > 0) {
@@ -616,9 +609,9 @@ bool MWISFactoring::fulfills_min_flexibility_and_mobility(
                static_cast<size_t>(task->get_num_variables()));
         assert(facts_to_mobility.size() == sum_fact_mobility.size());
 
-        double sum_fact_flexibility = compute_leaf_fact_flexibility(
-            pleaf.vars, *task, included_as, facts_to_mobility,
-            sum_fact_mobility);
+        double sum_fact_flexibility =
+            compute_leaf_fact_flexibility(pleaf.vars, *task, included_as,
+                                          facts_to_mobility, sum_fact_mobility);
 
         if (min_fact_flexibility > sum_fact_flexibility) {
             return false;
@@ -628,11 +621,9 @@ bool MWISFactoring::fulfills_min_flexibility_and_mobility(
 }
 
 void MWISFactoring::multiply_out_potential_leaf(
-    const vector<pair<vector<int>, vector<size_t>>>&
-        outside_pre_and_ases,
+    const vector<pair<vector<int>, vector<size_t>>>& outside_pre_and_ases,
     const PotentialLeaf& pleaf, vector<int>& outside_pre_vars,
-    vector<size_t>& included_as, size_t depth,
-    int& ignored_leaf_candidates,
+    vector<size_t>& included_as, size_t depth, int& ignored_leaf_candidates,
     const vector<vector<unordered_map<size_t, int>>>& facts_to_mobility,
     const vector<vector<int>>& sum_fact_mobility) {
     if (depth == outside_pre_and_ases.size()) {
@@ -644,6 +635,9 @@ void MWISFactoring::multiply_out_potential_leaf(
         double weight;
 
         switch (strategy) {
+        case WMIS_STRATEGY::MPL:
+            weight = 1;
+            break;
         case WMIS_STRATEGY::MMAS:
             weight = included_as.size();
             break;
@@ -673,11 +667,10 @@ void MWISFactoring::multiply_out_potential_leaf(
             exit_with(utils::ExitCode::SEARCH_INPUT_ERROR);
         }
 
-        if (fulfills_min_flexibility_and_mobility(pleaf, included_as,
-                                                  facts_to_mobility,
-                                                  sum_fact_mobility)) {
-            potential_leaf_nodes.emplace_back(outside_pre_vars,
-                                              pleaf.vars, weight);
+        if (fulfills_min_flexibility_and_mobility(
+                pleaf, included_as, facts_to_mobility, sum_fact_mobility)) {
+            potential_leaf_nodes.emplace_back(outside_pre_vars, pleaf.vars,
+                                              weight);
         } else {
             ignored_leaf_candidates++;
         }
@@ -686,8 +679,7 @@ void MWISFactoring::multiply_out_potential_leaf(
 
     const auto& [outside_pre, ases] = outside_pre_and_ases[depth];
     assert(all_of(ases.begin(), ases.end(), [&](size_t as) {
-        return find(pleaf.self_mobile_as.begin(),
-                    pleaf.self_mobile_as.end(),
+        return find(pleaf.self_mobile_as.begin(), pleaf.self_mobile_as.end(),
                     as) == pleaf.self_mobile_as.end();
     }));
     size_t num_outside_pre_before = outside_pre_vars.size();
@@ -698,9 +690,8 @@ void MWISFactoring::multiply_out_potential_leaf(
                             outside_pre.end());
     included_as.insert(included_as.end(), ases.begin(), ases.end());
 
-    multiply_out_potential_leaf(outside_pre_and_ases, pleaf,
-                                outside_pre_vars, included_as,
-                                depth + 1, ignored_leaf_candidates,
+    multiply_out_potential_leaf(outside_pre_and_ases, pleaf, outside_pre_vars,
+                                included_as, depth + 1, ignored_leaf_candidates,
                                 facts_to_mobility, sum_fact_mobility);
 
     assert(num_included_as_before <= included_as.size());
@@ -709,9 +700,8 @@ void MWISFactoring::multiply_out_potential_leaf(
     outside_pre_vars.resize(num_outside_pre_before);
 
     // (2) do not include this AS
-    multiply_out_potential_leaf(outside_pre_and_ases, pleaf,
-                                outside_pre_vars, included_as,
-                                depth + 1, ignored_leaf_candidates,
+    multiply_out_potential_leaf(outside_pre_and_ases, pleaf, outside_pre_vars,
+                                included_as, depth + 1, ignored_leaf_candidates,
                                 facts_to_mobility, sum_fact_mobility);
 }
 
@@ -733,14 +723,13 @@ void MWISFactoring::multiply_out_action_schemas(
             for (int var : pleaf.vars) {
                 is_leaf_var[var] = true;
             }
-            utils::HashMap<vector<int>, vector<size_t>>
-                as_by_outside_pre_vars;
+            utils::HashMap<vector<int>, vector<size_t>> as_by_outside_pre_vars;
             for (size_t as_id : pleaf.action_schemes) {
                 if (find(pleaf.self_mobile_as.begin(),
                          pleaf.self_mobile_as.end(),
                          as_id) == pleaf.self_mobile_as.end()) {
-                    vector<bool> is_outside_pre_var(
-                        task->get_num_variables(), false);
+                    vector<bool> is_outside_pre_var(task->get_num_variables(),
+                                                    false);
                     const ActionSchema& as = action_schemas[as_id];
                     for (int var : as.pre_vars) {
                         if (!is_leaf_var[var]) {
@@ -748,20 +737,17 @@ void MWISFactoring::multiply_out_action_schemas(
                         }
                     }
                     vector<int> outside_pre_vars;
-                    for (int var = 0; var < task->get_num_variables();
-                         ++var) {
+                    for (int var = 0; var < task->get_num_variables(); ++var) {
                         if (is_outside_pre_var[var]) {
                             outside_pre_vars.push_back(var);
                         }
                     }
-                    as_by_outside_pre_vars[outside_pre_vars].push_back(
-                        as_id);
+                    as_by_outside_pre_vars[outside_pre_vars].push_back(as_id);
                 }
             }
 
             outside_pre_and_as.reserve(as_by_outside_pre_vars.size());
-            for (const auto& [outside_pre, ases] :
-                 as_by_outside_pre_vars) {
+            for (const auto& [outside_pre, ases] : as_by_outside_pre_vars) {
                 outside_pre_and_as.emplace_back(outside_pre, ases);
             }
 
@@ -779,10 +765,8 @@ void MWISFactoring::multiply_out_action_schemas(
                 pleaf.num_affecting_actions = num_ops;
                 assert(pleaf.num_actions > 0);
                 assert(pleaf.num_affecting_actions > 0);
-                assert(pleaf.num_affecting_actions >=
-                       pleaf.num_actions);
-                if (min_flexibility >
-                    pleaf.num_actions / (double)num_ops) {
+                assert(pleaf.num_affecting_actions >= pleaf.num_actions);
+                if (min_flexibility > pleaf.num_actions / (double)num_ops) {
                     // this is the maximum this leaf can possibly
                     // get and it is not enough
                     continue;
@@ -795,10 +779,9 @@ void MWISFactoring::multiply_out_action_schemas(
                 continue;
             }
             if (min_fact_flexibility > 0) {
-                double max_leaf_fact_flex =
-                    compute_leaf_fact_flexibility(
-                        pleaf.vars, *task, pleaf.action_schemes,
-                        facts_to_mobility, sum_fact_mobility);
+                double max_leaf_fact_flex = compute_leaf_fact_flexibility(
+                    pleaf.vars, *task, pleaf.action_schemes, facts_to_mobility,
+                    sum_fact_mobility);
                 if (min_fact_flexibility > max_leaf_fact_flex) {
                     // this is the maximum this leaf can possibly
                     // get and it is not enough
@@ -817,10 +800,9 @@ void MWISFactoring::multiply_out_action_schemas(
 
         vector<int> outside_pre_vars;
         vector<size_t> included_as(pleaf.self_mobile_as);
-        multiply_out_potential_leaf(
-            outside_pre_and_as, pleaf, outside_pre_vars, included_as, 0,
-            ignored_leaf_candidates, facts_to_mobility,
-            sum_fact_mobility);
+        multiply_out_potential_leaf(outside_pre_and_as, pleaf, outside_pre_vars,
+                                    included_as, 0, ignored_leaf_candidates,
+                                    facts_to_mobility, sum_fact_mobility);
 
         if (!check_timeout()) {
             return;
@@ -831,13 +813,12 @@ void MWISFactoring::multiply_out_action_schemas(
         << " potential leaves due to minimum mobility / "
            "flexibility."
         << endl;
-    log << "Number final leaf candidates: "
-        << potential_leaf_nodes.size() << endl;
+    log << "Number final leaf candidates: " << potential_leaf_nodes.size()
+        << endl;
 }
 
 vector<size_t> MWISFactoring::get_superset_pleaf_ids(
-    const PotentialLeaf& pleaf,
-    const vector<PotentialLeaf>& potential_leaves,
+    const PotentialLeaf& pleaf, const vector<PotentialLeaf>& potential_leaves,
     const vector<vector<size_t>>& var_to_p_leaves) {
     vector<size_t> superset_pleaf_ids;
     if (pleaf.vars.size() == 1) {
@@ -853,8 +834,7 @@ vector<size_t> MWISFactoring::get_superset_pleaf_ids(
             for (int var : pleaf.vars) {
                 if (!binary_search(
                         potential_leaves[check_pleaf_id].vars.begin(),
-                        potential_leaves[check_pleaf_id].vars.end(),
-                        var)) {
+                        potential_leaves[check_pleaf_id].vars.end(), var)) {
                     superset_schema = false;
                     break;
                 }
@@ -925,8 +905,7 @@ void MWISFactoring::compute_fact_flexibility(
     sum_fact_mobility.resize(task->get_num_variables());
     for (int var = 0; var < task->get_num_variables(); ++var) {
         sum_fact_mobility[var].resize(variables[var].get_domain_size());
-        for (int val = 0; val < variables[var].get_domain_size();
-             ++val) {
+        for (int val = 0; val < variables[var].get_domain_size(); ++val) {
             for (const auto& [as, num] : facts_to_mobility[var][val]) {
                 sum_fact_mobility[var][val] += num;
             }
@@ -935,6 +914,7 @@ void MWISFactoring::compute_fact_flexibility(
 }
 
 void MWISFactoring::compute_potential_leaves() {
+    // TODO: Look at this, should I reimplement this?
     assert(!action_schemas.empty());
 
     vector<PotentialLeaf> potential_leaves;
@@ -960,8 +940,7 @@ void MWISFactoring::compute_potential_leaves() {
                 size_t s = potential_leaves.size();
                 leaf_lookup[action_schema.eff_vars] = s;
                 potential_leaves.emplace_back(action_schema.eff_vars);
-                potential_leaves[s].add_leaf_only_schema(as,
-                                                         action_schema);
+                potential_leaves[s].add_leaf_only_schema(as, action_schema);
             } else {
                 potential_leaves[it->second].add_leaf_only_schema(
                     as, action_schema);
@@ -982,8 +961,8 @@ void MWISFactoring::compute_potential_leaves() {
 
     // set the number of leaf-only actions
     for (const PotentialLeaf& p_leaf : potential_leaves) {
-        vector<size_t> superset_schemes(get_superset_pleaf_ids(
-            p_leaf, potential_leaves, var_to_p_leaves));
+        vector<size_t> superset_schemes(
+            get_superset_pleaf_ids(p_leaf, potential_leaves, var_to_p_leaves));
         for (size_t superset_as_id : superset_schemes) {
             for (size_t leaf_only_schema : p_leaf.action_schemes) {
                 potential_leaves[superset_as_id].add_leaf_only_schema(
@@ -1028,9 +1007,8 @@ inline vector<vector<int>> get_sccs(const TaskProxy& task_proxy) {
     return sccs::compute_maximal_sccs(vars);
 }
 
-void MWISFactoring::add_cg_sccs(
-    vector<PotentialLeaf>& potential_leaves,
-    vector<vector<size_t>>& var_to_p_leaves) {
+void MWISFactoring::add_cg_sccs(vector<PotentialLeaf>& potential_leaves,
+                                vector<vector<size_t>>& var_to_p_leaves) {
     vector<vector<int>> sccs = get_sccs(task_proxy);
 
     if (sccs.size() == 1) {
@@ -1077,8 +1055,7 @@ void MWISFactoring::add_cg_sccs(
                     }
                     bool subset_schema = true;
                     for (int var : potential_leaves[index].vars) {
-                        if (!binary_search(scc.begin(), scc.end(),
-                                           var)) {
+                        if (!binary_search(scc.begin(), scc.end(), var)) {
                             subset_schema = false;
                             break;
                         }
@@ -1103,8 +1080,7 @@ void MWISFactoring::add_cg_sccs(
 
             for (size_t pleaf : subset_schemes) {
                 assert(pleaf < potential_leaves.size() - added);
-                for (size_t as_id :
-                     potential_leaves[pleaf].action_schemes) {
+                for (size_t as_id : potential_leaves[pleaf].action_schemes) {
                     potential_leaves[s].add_leaf_only_schema(
                         as_id, action_schemas[as_id]);
                 }
@@ -1115,8 +1091,7 @@ void MWISFactoring::add_cg_sccs(
         }
     }
 
-    log << "Added " << added << " causal-graph SCC potential leaves."
-        << endl;
+    log << "Added " << added << " causal-graph SCC potential leaves." << endl;
 }
 
 void MWISFactoring::add_options_to_parser(plugins::Feature& feature) {
@@ -1129,8 +1104,8 @@ void MWISFactoring::add_options_to_parser(plugins::Feature& feature) {
         "of leaf mobility.",
         "MML");
     feature.add_option<int>(
-        "min_mobility",
-        "Minimum number of leaf-only actions per leaf factor.", "1");
+        "min_mobility", "Minimum number of leaf-only actions per leaf factor.",
+        "1");
     feature.add_option<double>("min_flexibility",
                                "Minimum flexibility (ratio between "
                                "the number of leaf-only vs. "
@@ -1152,6 +1127,7 @@ void MWISFactoring::add_options_to_parser(plugins::Feature& feature) {
 }
 
 static plugins::TypedEnumPlugin<WMIS_STRATEGY> _enum_plugin({
+    {"MPL", "maximize number of leaves"},
     {"MML", "maximize mobile leaves"},
     {"MMAS", "maximize mobile action schemas"},
     {"MM_OPT", "maximize mobility"},
