@@ -2,6 +2,7 @@
 #define DECOUPLING_MWIS_FACTORING_H
 
 #include "factoring.h"
+#include <vector>
 
 namespace plugins {
 class Options;
@@ -21,7 +22,23 @@ enum class WMIS_STRATEGY {
 };
 
 class MWISFactoring : public decoupling::Factoring {
-    typedef std::vector<std::vector<int>> Graph;
+    // typedef std::vector<std::vector<int>> Graph;
+    struct GraphChils {
+        int num_of_vertex;
+        int nember_of_edges;
+        mutable std::vector<int> best_solution;
+
+        bool is_empty() const;
+        int add_vertex(long long weight);
+        void add_edge(int first_vertex, int second_vertex);
+        void full_run(double time_limit, int n_solutions,
+                      unsigned int seed) const;
+        void local_run(double time_limit, unsigned int seed) const;
+        long long get_best_solution_weight() const;
+
+     private:
+        void* solver;
+    };
 
     struct PotentialLeafNode {
         std::vector<int> outside_pre_vars;
@@ -99,11 +116,11 @@ class MWISFactoring : public decoupling::Factoring {
                      std::vector<std::vector<size_t>>& var_to_p_leaves);
 
     void add_leaf_intersection_edges(
-        Graph& graph,
+        GraphChils& graph,
         const std::vector<std::vector<size_t>>& var_to_p_leaves) const;
 
     void add_outside_pre_var_edges(
-        Graph& graph,
+        GraphChils& graph,
         const std::vector<std::vector<size_t>>& var_to_p_leaves) const;
 
     bool fulfills_min_flexibility_and_mobility(
@@ -137,12 +154,11 @@ class MWISFactoring : public decoupling::Factoring {
     static bool has_as_pre_or_eff_on_leaf(const ActionSchema& as,
                                           const PotentialLeaf& leaf);
 
-    void construct_graph_conclusive_leaves(Graph& graph);
+    void construct_graph_conclusive_leaves(GraphChils& graph);
 
-    void construct_graph(Graph& graph);
+    void construct_graph(GraphChils& graph);
 
-    std::vector<int> solve_wmis(const Graph& graph,
-                                const std::vector<double>& weights,
+    std::vector<int> solve_wmis(const GraphChils& graph,
                                 const utils::CountdownTimer& timer);
 
     void compute_factoring_() override;

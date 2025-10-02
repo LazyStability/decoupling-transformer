@@ -98,8 +98,9 @@ inline double get_log(double num_actions) {
     return log(max(1.0001, num_actions));
 }
 
+// TODO: Change this to use chils
 void MWISFactoring::add_leaf_intersection_edges(
-    Graph& graph, const vector<vector<size_t>>& var_to_p_leaves) const {
+    GraphChils& graph, const vector<vector<size_t>>& var_to_p_leaves) const {
     // non-empty intersection between potential leaves
     vector<vector<bool>> pleaf_intersect(potential_leaf_nodes.size() - 1);
     for (size_t i = 0; i < pleaf_intersect.size(); ++i) {
@@ -130,8 +131,9 @@ void MWISFactoring::add_leaf_intersection_edges(
     }
 }
 
+// TODO: Change this to use chils
 void MWISFactoring::add_outside_pre_var_edges(
-    Graph& graph, const vector<vector<size_t>>& var_to_p_leaves) const {
+    GraphChils& graph, const vector<vector<size_t>>& var_to_p_leaves) const {
     for (size_t i = 0; i < potential_leaf_nodes.size(); ++i) {
         const PotentialLeafNode& pleaf = potential_leaf_nodes[i];
         for (int var : pleaf.outside_pre_vars) {
@@ -215,8 +217,8 @@ bool MWISFactoring::has_as_pre_or_eff_on_leaf(const ActionSchema& as,
     return false;
 }
 
-void MWISFactoring::construct_graph_conclusive_leaves(Graph& /*graph*/) {
-    // TODO: implement this
+// TODO: Implement this
+void MWISFactoring::construct_graph_conclusive_leaves(GraphChils& graph) {
     cerr << "not implemented in mwis_factoring.cc" << endl;
     utils::exit_with(utils::ExitCode::SEARCH_CRITICAL_ERROR);
 
@@ -431,8 +433,9 @@ void MWISFactoring::construct_graph_conclusive_leaves(Graph& /*graph*/) {
     //    }
 }
 
-void MWISFactoring::construct_graph(Graph& graph) {
-    assert(graph.empty());
+// TODO: Change this method
+void MWISFactoring::construct_graph(GraphChils& graph) {
+    // assert(graph.empty());
 
     compute_action_schemas();
 
@@ -456,8 +459,6 @@ void MWISFactoring::construct_graph(Graph& graph) {
         return;
     }
 
-    graph.resize(potential_leaf_nodes.size());
-
     vector<vector<size_t>> var_to_p_leaves(
         task->get_num_variables()); // maps variables to potential
                                     // leaf ids
@@ -477,25 +478,24 @@ void MWISFactoring::construct_graph(Graph& graph) {
     add_outside_pre_var_edges(graph, var_to_p_leaves);
 }
 
-vector<int> MWISFactoring::solve_wmis(const Graph& graph,
-                                      const vector<double>& weights,
+vector<int> MWISFactoring::solve_wmis(const GraphChils& graph,
                                       const utils::CountdownTimer& timer) {
-    // TODO: Use CHILS solver
-
-    // vector<int> independent_set;
-    //
-    // utils::g_log << "Computing max weighted independent set..."
-    //              << flush;
     // double weight = max_cliques::compute_max_weighted_independent_set(
     //     graph, weights, independent_set, min_number_leaves,
     //     timer.get_remaining_time());
-    // utils::g_log << "done!" << endl;
-    //
-    // log << "Weight of computed independent set: " << weight << endl;
-    //
-    // return independent_set;
+    utils::g_log << "Computing max weighted independent set..." << flush;
+    // TODO: Better values for solutions and seed. Keep in mind this solver does
+    // not respect the min_number_leaves
+    graph.full_run(timer.get_remaining_time(), 100, 183423);
+    double weight = graph.get_best_solution_weight();
+    utils::g_log << "done!" << endl;
+
+    log << "Weight of computed independent set: " << weight << endl;
+
+    return graph.best_solution;
 }
 
+// TODO: This is the "main" method
 void MWISFactoring::compute_factoring_() {
     // successor node IDs for all graph nodes
     vector<vector<int>> graph;
@@ -635,9 +635,6 @@ void MWISFactoring::multiply_out_potential_leaf(
         double weight;
 
         switch (strategy) {
-        case WMIS_STRATEGY::MPL:
-            weight = 1;
-            break;
         case WMIS_STRATEGY::MMAS:
             weight = included_as.size();
             break;
