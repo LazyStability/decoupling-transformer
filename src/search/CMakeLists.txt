@@ -977,12 +977,11 @@ ExternalProject_Add(
     BUILD_IN_SOURCE 0
     BUILD_COMMAND make -C <SOURCE_DIR>
 
-    INSTALL_COMMAND install <SOURCE_DIR>/libCHILS.a <SOURCE_DIR>/include/chils.h <INSTALL_DIR>
+    INSTALL_COMMAND install <SOURCE_DIR>/libCHILS.a <SOURCE_DIR>/include/chils.h -t "${downward_BINARY_DIR}/CHILS"
 )
 add_dependencies(decoupling chils)
 
 
 # FIX: Not 100% sure on the linking done here, but it works.
 target_include_directories(decoupling INTERFACE ${downward_BINARY_DIR}/CHILS)
-target_link_libraries(decoupling INTERFACE ${downward_BINARY_DIR}/CHILS/libCHILS.a)
-# target_link_libraries(decoupling INTERFACE ${downward_BINARY_DIR}/CHILS/chils.h)
+target_link_libraries(decoupling INTERFACE /home/me/Software/decoupling-transformer/builds/release/search/CHILS)
