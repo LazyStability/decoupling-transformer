@@ -48,6 +48,7 @@
                     cppcheck
                     uncrustify
                     mprocs
+                    entr
                     # codespell
                     # gtest
                     # lcov
