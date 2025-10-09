@@ -11,7 +11,7 @@ extern "C" {
     void* chils_initialize();
     void chils_release(void*);
     void chils_add_edge(void*, int, int);
-    int chils_add_vertex(void*,int);
+    int chils_add_vertex(void*,long long);
 }
 
 GraphChils::GraphChils(): solver(chils_initialize()) {}

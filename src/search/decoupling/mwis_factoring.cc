@@ -108,6 +108,7 @@ void MWISFactoring::add_leaf_intersection_edges(
     }
     for (int var = 0; var < (int)task->get_num_variables(); ++var) {
         for (size_t pot_leaf_1 : var_to_p_leaves[var]) {
+            // TODO: Start by pot_leaf 1 and count up and remove the if condition
             for (size_t pot_leaf_2 : var_to_p_leaves[var]) {
                 if (pot_leaf_1 < pot_leaf_2) {
                     pleaf_intersect[pot_leaf_1][pot_leaf_2 - pot_leaf_1 - 1] =
@@ -122,8 +123,7 @@ void MWISFactoring::add_leaf_intersection_edges(
              p_leaf_2 < potential_leaf_nodes.size(); ++p_leaf_2) {
             // we need p_leaf_1 < p_leaf_2
             if (pleaf_intersect[p_leaf_1][p_leaf_2 - p_leaf_1 - 1]) {
-                // graph[p_leaf_1].push_back(p_leaf_2);
-                // graph[p_leaf_2].push_back(p_leaf_1);
+                graph.add_edge(p_leaf_1, p_leaf_2);
             }
         }
         // TODO: is this actually needed?
@@ -138,15 +138,14 @@ void MWISFactoring::add_outside_pre_var_edges(
         const PotentialLeafNode& pleaf = potential_leaf_nodes[i];
         for (int var : pleaf.outside_pre_vars) {
             for (size_t pleaf_id : var_to_p_leaves[var]) {
-                // graph[i].push_back(pleaf_id);
-                // graph[pleaf_id].push_back(i);
+                graph.add_edge(i, pleaf_id);
             }
         }
     }
-    for (size_t i = 0; i < potential_leaf_nodes.size(); ++i) {
-        // TODO: avoid this
-        // utils::sort_unique(graph[i]);
-    }
+    // TODO: avoid this
+    // for (size_t i = 0; i < potential_leaf_nodes.size(); ++i) {
+    //      utils::sort_unique(graph[i]);
+    // }
 }
 
 bool MWISFactoring::is_as_leaf_irrelevant(const ActionSchema& as,
@@ -447,6 +446,12 @@ void MWISFactoring::construct_graph(GraphChils& graph) {
 
     compute_potential_leaves();
 
+
+    // TODO: Finde größte länge Nachkommerstellen
+    for (const auto& pleaf : potential_leaf_nodes) {
+        graph.add_vertex((int)(pleaf.weight*1000));
+    }
+
     if (!check_timeout()) {
         return;
     }
@@ -519,13 +524,6 @@ void MWISFactoring::compute_factoring_() {
 
     // save memory
     Factoring::save_memory();
-
-    // TODO: DO this directly in the construct_graph methods
-    vector<double> weights(potential_leaf_nodes.size());
-    int i = 0;
-    for (const auto& pleaf : potential_leaf_nodes) {
-        weights[i++] = pleaf.weight;
-    }
 
     vector<int> solution = solve_wmis(graph, factoring_timer);
 

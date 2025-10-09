@@ -3,6 +3,7 @@
 
 #include "factoring.h"
 #include <vector>
+#include "chils_wrapper.h"
 
 namespace plugins {
 class Options;
@@ -20,6 +21,7 @@ enum class WMIS_STRATEGY {
     MCM, // maximize conclusive mobility, i.e. number of conclusive
          // actions
 };
+
 
 class MWISFactoring : public decoupling::Factoring {
     // typedef std::vector<std::vector<int>> Graph;
