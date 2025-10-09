@@ -11,7 +11,6 @@
 #include "../task_proxy.h"
 #include "../task_utils/causal_graph.h"
 #include "../tasks/root_task.h"
-#include "chils.h"
 
 #include <algorithm>
 #include <cmath>
@@ -21,15 +20,16 @@
 using namespace std;
 
 extern "C" {
+#include "chils.h"
     // C Function call
-    long long chils_solution_get_weight(void* );
-    int* chils_solution_get_independent_set(void* );
+    long long chils_solution_get_weight(void*);
+    int* chils_solution_get_independent_set(void*);
     void chils_run_full(void*, double, int, unsigned int);
-    void chils_run_local_search_only(void*, double,  unsigned int);
+    void chils_run_local_search_only(void*, double, unsigned int);
     int chils_solution_get_size(void*);
     void* chils_initialize();
     void chils_release(void*);
-    chils_add_edge(void, int, int)
+    void chils_add_edge(void*, int, int);
 }
 namespace decoupling {
 void MWISFactoring::PotentialLeaf::add_leaf_only_schema(
@@ -490,7 +490,7 @@ void MWISFactoring::construct_graph(GraphChils& graph) {
     add_outside_pre_var_edges(graph, var_to_p_leaves);
 }
 
-// Edited by me 
+// Edited by me
 vector<int> MWISFactoring::solve_wmis(const GraphChils& graph,
                                       const utils::CountdownTimer& timer) {
     // double weight = max_cliques::compute_max_weighted_independent_set(
@@ -538,7 +538,7 @@ void MWISFactoring::compute_factoring_() {
         weights[i++] = pleaf.weight;
     }
 
-    vector<int> solution = solve_wmis(graph,  factoring_timer);
+    vector<int> solution = solve_wmis(graph, factoring_timer);
 
     if (solution.empty()) {
         log << "WARNING: no solution found." << endl;
@@ -1160,37 +1160,36 @@ class MWISFactoringFeature
     }
 };
 
-GraphChils::GraphChils(): solver(chils_initialize())
-{}
-GraphChils::~GraphChils(){
+GraphChils::GraphChils(): solver(chils_initialize()) {}
+GraphChils::~GraphChils() {
     chils_release(solver);
 }
-int GraphChils::add_vertex(long long weight){
+int GraphChils::add_vertex(long long weight) {
     num_of_vertex++;
     return chils_add_vertex(solver, weight);
 }
-void GraphChils::add_edge(int first_vertex, int second_vertex){
+void GraphChils::add_edge(int first_vertex, int second_vertex) {
     chils_add_edge(solver, first_vertex, second_vertex);
     num_of_edges++;
 }
-bool GraphChils::empty()const{
+bool GraphChils::empty() const {
     return num_of_vertex == 0;
 }
 void GraphChils::full_run(double time_limit, int n_solutions,
-                      unsigned int seed) const{
+                          unsigned int seed) const {
     chils_run_full(solver, time_limit, n_solutions, seed);
     int size = chils_solution_get_size(solver);
     int* arr = chils_solution_get_independent_set(solver);
-    best_solution.assign(arr, arr +size);
+    best_solution.assign(arr, arr + size);
 }
-void GraphChils::local_run(double time_limit, unsigned int seed) const{
-    chils_run_local_search_only(solver, time_limit,seed);
+void GraphChils::local_run(double time_limit, unsigned int seed) const {
+    chils_run_local_search_only(solver, time_limit, seed);
     int size = chils_solution_get_size(solver);
     int* arr = chils_solution_get_independent_set(solver);
-    best_solution.assign(arr, arr +size);
+    best_solution.assign(arr, arr + size);
 }
 
-long long GraphChils::get_best_solution_weight() const{
+long long GraphChils::get_best_solution_weight() const {
     return chils_solution_get_weight(solver);
 }
 static plugins::FeaturePlugin<MWISFactoringFeature> _plugin;
