@@ -108,7 +108,8 @@ void MWISFactoring::add_leaf_intersection_edges(
     }
     for (int var = 0; var < (int)task->get_num_variables(); ++var) {
         for (size_t pot_leaf_1 : var_to_p_leaves[var]) {
-            // TODO: Start by pot_leaf 1 and count up and remove the if condition
+            // TODO: Start by pot_leaf 1 and count up and remove the if
+            // condition
             for (size_t pot_leaf_2 : var_to_p_leaves[var]) {
                 if (pot_leaf_1 < pot_leaf_2) {
                     pleaf_intersect[pot_leaf_1][pot_leaf_2 - pot_leaf_1 - 1] =
@@ -220,6 +221,7 @@ bool MWISFactoring::has_as_pre_or_eff_on_leaf(const ActionSchema& as,
 void MWISFactoring::construct_graph_conclusive_leaves(GraphChils& graph) {
     cerr << "not implemented in mwis_factoring.cc" << endl;
     utils::exit_with(utils::ExitCode::SEARCH_CRITICAL_ERROR);
+    graph.empty();
 
     //    assert(variables.size() == 0);
     //    assert(constraints.size() == 0);
@@ -446,10 +448,9 @@ void MWISFactoring::construct_graph(GraphChils& graph) {
 
     compute_potential_leaves();
 
-
     // TODO: Finde größte länge Nachkommerstellen
     for (const auto& pleaf : potential_leaf_nodes) {
-        graph.add_vertex((int)(pleaf.weight*1000));
+        graph.add_vertex((int)(pleaf.weight));
     }
 
     if (!check_timeout()) {
@@ -493,7 +494,7 @@ vector<int> MWISFactoring::solve_wmis(const GraphChils& graph,
     utils::g_log << "Computing max weighted independent set..." << flush;
     // TODO: Better values for solutions and seed. Keep in mind this solver does
     // not respect the min_number_leaves
-    graph.full_run(timer.get_remaining_time(), 1, 5);
+    graph.full_run(0.5, 1, 5);
     double weight = graph.get_best_solution_weight();
     utils::g_log << "done!" << endl;
 

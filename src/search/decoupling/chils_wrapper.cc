@@ -1,5 +1,8 @@
 #include "chils_wrapper.h"
+
 #include "chils.h"
+
+#include <iostream>
 
 extern "C" {
     // C Function call
@@ -11,18 +14,24 @@ extern "C" {
     void* chils_initialize();
     void chils_release(void*);
     void chils_add_edge(void*, int, int);
-    int chils_add_vertex(void*,long long);
+    int chils_add_vertex(void*, long long);
 }
 
-GraphChils::GraphChils(): solver(chils_initialize()) {}
+GraphChils::GraphChils(): solver(chils_initialize()) {
+    std::cout << "Initialise Graph" << std::endl;
+}
 GraphChils::~GraphChils() {
+    std::cout << "Destroy Graph" << std::endl;
     chils_release(solver);
 }
 int GraphChils::add_vertex(long long weight) {
+    std::cout << "Chils add graph weight: " << weight << std::endl;
     num_of_vertex++;
     return chils_add_vertex(solver, weight);
 }
 void GraphChils::add_edge(int first_vertex, int second_vertex) {
+    std::cout << "Chils add edge between: " << first_vertex << " "
+              << second_vertex << std::endl;
     chils_add_edge(solver, first_vertex, second_vertex);
     num_of_edges++;
 }
