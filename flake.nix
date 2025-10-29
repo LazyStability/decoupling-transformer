@@ -59,6 +59,7 @@
                     uv
                     gmp
                     soplex
+                    basedpyright
                     # cplex
                   ]
                   ++ (if system == "aarch64-darwin" then [ ] else [ gdb ]);
@@ -73,7 +74,7 @@
 
                 shellHook = ''
                   unset PYTHONPATH
-                  export PATH=$PATH:/data/Software/bachelor-plan-validator/validate
+                  export PATH=$PATH:/data/Software/bachelor-plan-validator/bin
                 '';
 
               };
