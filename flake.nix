@@ -56,11 +56,25 @@
                     # vcpkg-tool
 
                     python3
+                    uv
                     gmp
                     soplex
                     # cplex
                   ]
                   ++ (if system == "aarch64-darwin" then [ ] else [ gdb ]);
+                env = {
+                  DOWNWARD_REPO = "/data/Software/bachelor-fast-downwards/decoupling";
+                  DOWNWARD_BENCHMARKS = "/data/Software/bachelor-benchmarks"; # Adapt path
+
+                  UV_PYTHON_DOWNLOADS = "never";
+                  UV_PYTHON = pkgs.python3.interpreter;
+                  LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath pkgs.pythonManylinuxPackages.manylinux1;
+                };
+
+                shellHook = ''
+                  unset PYTHONPATH
+                  export PATH=$PATH:/data/Software/bachelor-plan-validator/validate
+                '';
 
               };
         }
