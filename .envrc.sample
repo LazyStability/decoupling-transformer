@@ -1,0 +1,7 @@
+# Copy this into your own envrc
+# The first two lines are only necessary if you want to develop on the project using nix
+use flake
+export NIX_ENFORCE_NO_NATIVE=0
+export DOWNWARD_REPO=<path-to-repo-downwards>
+export DOWNWARD_BENCHMARKS=<path-to-repo-bench>
+PATH_add <path-to-repo-val>/bin
