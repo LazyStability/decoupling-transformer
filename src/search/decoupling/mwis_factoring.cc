@@ -106,6 +106,7 @@ void MWISFactoring::add_leaf_intersection_edges(
     for (size_t i = 0; i < pleaf_intersect.size(); ++i) {
         pleaf_intersect[i].resize(potential_leaf_nodes.size() - i - 1, false);
     }
+    // TODO: Check for duplicates
     for (int var = 0; var < (int)task->get_num_variables(); ++var) {
         for (size_t pot_leaf_1 : var_to_p_leaves[var]) {
             // TODO: Start by pot_leaf 1 and count up and remove the if
@@ -450,7 +451,8 @@ void MWISFactoring::construct_graph(GraphChils& graph) {
 
     // TODO: Finde größte länge Nachkommerstellen
     for (const auto& pleaf : potential_leaf_nodes) {
-        graph.add_vertex((int)(pleaf.weight));
+        log << pleaf.weight << std::endl;
+        graph.add_vertex((int)(pleaf.weight) * 10000);
     }
 
     if (!check_timeout()) {
