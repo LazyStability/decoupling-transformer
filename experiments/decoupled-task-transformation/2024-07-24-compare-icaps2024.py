@@ -41,6 +41,7 @@ heuristics = {"ff" : [["--evaluator", "hff=ff(transform=adapt_costs(one))"], "[h
 
 DRIVER_OPTS = ["--overall-time-limit", "10m"]
 
+# TODO: use this issue
 for h_name, heuristic_option in heuristics.items():
     h_predefine, search_option = heuristic_option
     CONFIGS.append(IssueConfig(f'{h_name}', h_predefine + ['--search',  f'lazy_greedy({search_option}, cost_type=one)'], driver_options=DRIVER_OPTS))
