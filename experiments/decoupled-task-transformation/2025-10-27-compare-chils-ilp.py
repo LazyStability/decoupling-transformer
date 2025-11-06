@@ -1,11 +1,15 @@
 #! /usr/bin/env python
 import os
 import os.path
-import decoupling_parser
-import common_setup
+import platform
+import re
 from collections import defaultdict
 from pathlib import Path
 from subprocess import call
+
+
+import decoupling_parser
+import common_setup
 
 from downward.experiment import FastDownwardExperiment
 from downward.reports.absolute import AbsoluteReport
@@ -13,10 +17,33 @@ from downward.reports.compare import ComparativeReport
 from downward.reports.scatter import ScatterPlotReport
 from downward.reports.taskwise import TaskwiseReport
 from lab import reports
-from lab.environments import BaselSlurmEnvironment, LocalEnvironment
+from lab.environments import SlurmEnvironment, LocalEnvironment
 from lab.reports import Attribute
 from lab.reports.filter import FilterReport
 
+##################################
+## Helper Classes and Functions ##
+##################################
+class BWUniEnvironment(SlurmEnvironment):
+    """Environment for the BWUni cluster in Baden-Württemberg."""
+
+    DEFAULT_PARTITION = "cpu"
+    DEFAULT_QOS = "normal"
+    DEFAULT_TIME_LIMIT_PER_TASK = "12:00:00"
+    # 64 cores on cpu nodes, 236G usable memory
+    DEFAULT_MEMORY_PER_CPU = "3600M"
+    # See slurm.conf
+    MAX_TASKS = 1000
+
+    @classmethod
+    def is_present(cls):
+        node = platform.node()
+        return bool(re.match(r"uc3n990", node)) # TODO need to adapt this
+
+##########
+## Code ##
+##########
+ 
 repo = os.environ["DOWNWARD_REPO"]
 benchmarks_dir = os.environ["DOWNWARD_BENCHMARKS"]
 rev = "decoupling"
@@ -25,18 +52,69 @@ ATTRIBUTES = [
     # "plan",
     # "times"
 ]
-ENVIRONMENT=LocalEnvironment(processes=2)
-SUITE = [
-    "depot:p01.pddl",
-    "driverlog:p01.pddl",
-    # "elevators-*",
-    # "logistics00",
-    # "miconic",
-    # "nomystery-*",
-    # "openstacks-{opt/sat}XY-strips",
-    # "*transport-*",
-    # "zenotravel"
-]
+print("Network_name: ", platform.node())
+print("Is this the bwCluster? Answer: ",BWUniEnvironment.is_present())
+if False:
+    # Satisficing
+    SUITE = [
+        "agricola-sat18-strips", "airport", "assembly", "barman-sat11-strips",
+        "barman-sat14-strips", "blocks", "caldera-sat18-adl",
+        "caldera-split-sat18-adl", "cavediving-14-adl", "childsnack-sat14-strips",
+        "citycar-sat14-adl", "data-network-sat18-strips", "depot", "driverlog",
+        "elevators-sat08-strips", "elevators-sat11-strips", "flashfill-sat18-adl",
+        "floortile-sat11-strips", "floortile-sat14-strips", "freecell",
+        "ged-sat14-strips", "grid", "gripper", "hiking-sat14-strips",
+        "logistics00", "logistics98", "maintenance-sat14-adl", "miconic",
+        "miconic-fulladl", "miconic-simpleadl", "movie", "mprime", "mystery",
+        "nomystery-sat11-strips", "nurikabe-sat18-adl", "openstacks",
+        "openstacks-sat08-adl", "openstacks-sat08-strips",
+        "openstacks-sat11-strips", "openstacks-sat14-strips", "openstacks-strips",
+        "optical-telegraphs", "organic-synthesis-sat18-strips",
+        "organic-synthesis-split-sat18-strips", "parcprinter-08-strips",
+        "parcprinter-sat11-strips", "parking-sat11-strips", "parking-sat14-strips",
+        "pathways", "pegsol-08-strips", "pegsol-sat11-strips", "philosophers",
+        "pipesworld-notankage", "pipesworld-tankage", "psr-large", "psr-middle",
+        "psr-small", "rovers", "satellite", "scanalyzer-08-strips",
+        "scanalyzer-sat11-strips", "schedule", "settlers-sat18-adl",
+        "snake-sat18-strips", "sokoban-sat08-strips", "sokoban-sat11-strips",
+        "spider-sat18-strips", "storage", "termes-sat18-strips",
+        "tetris-sat14-strips", "thoughtful-sat14-strips", "tidybot-sat11-strips",
+        "tpp", "transport-sat08-strips", "transport-sat11-strips",
+        "transport-sat14-strips", "trucks", "trucks-strips",
+        "visitall-sat11-strips", "visitall-sat14-strips",
+        "woodworking-sat08-strips", "woodworking-sat11-strips", "zenotravel",
+    ]
+    ENVIRONMENT = BWUniEnvironment(
+        email="qf226@stud.uni-heidelberg.de",
+        memory_per_cpu="3500M", # adapt according to needs, this is per run and should be 100MB larger than the memory limit of the solver(s)
+    )
+
+else: 
+    ENVIRONMENT=LocalEnvironment(processes=2)
+    SUITE = [
+        "depot:p01.pddl",
+        "driverlog:p01.pddl",
+        # "elevators-*",
+        # "logistics00",
+        # "miconic",
+        # "nomystery-*",
+        # "openstacks-{opt/sat}XY-strips",
+        # "*transport-*",
+        # "zenotravel"
+    ]
+
+# exp.add_suite(benchmarks_dir, [
+#                                "depot",
+#                                "driverlog",
+#                                "elevators-*",
+#                                "logistics00",
+#                                "miconic",
+#                                "nomystery-*",
+#                                "openstacks-{opt/sat}XY-strips",
+#                                "*transport-*",
+#                                "zenotravel"
+#                                ])
+
 
 exp = FastDownwardExperiment(environment=ENVIRONMENT)
 
