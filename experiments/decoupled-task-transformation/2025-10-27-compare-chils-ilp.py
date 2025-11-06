@@ -38,7 +38,7 @@ class BWUniEnvironment(SlurmEnvironment):
     @classmethod
     def is_present(cls):
         node = platform.node()
-        return bool(re.match(r"uc3n990", node)) # TODO need to adapt this
+        return bool(re.match(r"uc3n990", node))
 
 ##########
 ## Code ##
@@ -49,12 +49,11 @@ benchmarks_dir = os.environ["DOWNWARD_BENCHMARKS"]
 rev = "decoupling"
 ATTRIBUTES = [
     "error",
-    # "plan",
-    # "times"
+    "plan",
+    "times"
 ]
-print("Network_name: ", platform.node())
 print("Is this the bwCluster? Answer: ",BWUniEnvironment.is_present())
-if False:
+if BWUniEnvironment.is_present():
     # Satisficing
     SUITE = [
         "agricola-sat18-strips", "airport", "assembly", "barman-sat11-strips",
