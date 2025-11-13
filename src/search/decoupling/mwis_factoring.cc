@@ -1,4 +1,5 @@
 #include "mwis_factoring.h"
+#include "chils.h"
 #include "chils_wrapper.h"
 
 #include "../algorithms/max_cliques.h"
@@ -17,6 +18,20 @@
 #include <cmath>
 #include <iostream>
 #include <queue>
+
+extern "C" {
+    // C Function call
+    long long chils_solution_get_weight(void*);
+    int* chils_solution_get_independent_set(void*);
+    void chils_run_full(void*, double, int, unsigned int);
+    void chils_run_local_search_only(void*, double, unsigned int);
+    int chils_solution_get_size(void*);
+    void* chils_initialize();
+    void chils_release(void*);
+    void chils_add_edge(void*, int, int);
+    int chils_add_vertex(void*, long long);
+    int chils_solution_get_vertex_configuration(void*, int);
+}
 
 using namespace std;
 
@@ -100,7 +115,7 @@ inline double get_log(double num_actions) {
 
 // TODO: Change this to use chils
 void MWISFactoring::add_leaf_intersection_edges(
-    GraphChils& graph, const vector<vector<size_t>>& var_to_p_leaves) const {
+    void* graph, const vector<vector<size_t>>& var_to_p_leaves) const {
     // non-empty intersection between potential leaves
     vector<vector<bool>> pleaf_intersect(potential_leaf_nodes.size() - 1);
     for (size_t i = 0; i < pleaf_intersect.size(); ++i) {
@@ -125,7 +140,8 @@ void MWISFactoring::add_leaf_intersection_edges(
              p_leaf_2 < potential_leaf_nodes.size(); ++p_leaf_2) {
             // we need p_leaf_1 < p_leaf_2
             if (pleaf_intersect[p_leaf_1][p_leaf_2 - p_leaf_1 - 1]) {
-                graph.add_edge(p_leaf_1, p_leaf_2);
+                chils_add_edge(graph, p_leaf_1, p_leaf_2);
+                // graph.add_edge(p_leaf_1, p_leaf_2);
             }
         }
         // TODO: is this actually needed?
@@ -135,12 +151,13 @@ void MWISFactoring::add_leaf_intersection_edges(
 
 // TODO: Change this to use chils
 void MWISFactoring::add_outside_pre_var_edges(
-    GraphChils& graph, const vector<vector<size_t>>& var_to_p_leaves) const {
+    void* graph, const vector<vector<size_t>>& var_to_p_leaves) const {
     for (size_t i = 0; i < potential_leaf_nodes.size(); ++i) {
         const PotentialLeafNode& pleaf = potential_leaf_nodes[i];
         for (int var : pleaf.outside_pre_vars) {
             for (size_t pleaf_id : var_to_p_leaves[var]) {
-                graph.add_edge(i, pleaf_id);
+                chils_add_edge(graph, i, pleaf_id);
+                // graph.add_edge(i, pleaf_id);
             }
         }
     }
@@ -219,10 +236,10 @@ bool MWISFactoring::has_as_pre_or_eff_on_leaf(const ActionSchema& as,
 }
 
 // TODO: Implement this
-void MWISFactoring::construct_graph_conclusive_leaves(GraphChils& graph) {
+void MWISFactoring::construct_graph_conclusive_leaves(void* graph) {
     cerr << "not implemented in mwis_factoring.cc" << endl;
     utils::exit_with(utils::ExitCode::SEARCH_CRITICAL_ERROR);
-    graph.empty();
+    // graph.empty();
 
     //    assert(variables.size() == 0);
     //    assert(constraints.size() == 0);
@@ -436,8 +453,8 @@ void MWISFactoring::construct_graph_conclusive_leaves(GraphChils& graph) {
 }
 
 // TODO: Change this method
-void MWISFactoring::construct_graph(GraphChils& graph) {
-    assert(graph.empty());
+void MWISFactoring::construct_graph(void* graph) {
+    // assert(graph.empty());
 
     compute_action_schemas();
 
@@ -451,8 +468,8 @@ void MWISFactoring::construct_graph(GraphChils& graph) {
 
     // TODO: Finde größte länge Nachkommerstellen
     for (const auto& pleaf : potential_leaf_nodes) {
-        log << pleaf.weight << std::endl;
-        graph.add_vertex((int)(pleaf.weight) * 10000);
+        chils_add_vertex(graph, (int)pleaf.weight);
+        // graph.((int)(pleaf.weight));
     }
 
     if (!check_timeout()) {
@@ -484,11 +501,12 @@ void MWISFactoring::construct_graph(GraphChils& graph) {
         return;
     }
 
+    // WARNING: This method is called, and does not work correctly
     add_outside_pre_var_edges(graph, var_to_p_leaves);
 }
 
 // Edited by me
-vector<int> MWISFactoring::solve_wmis(const GraphChils& graph,
+vector<int> MWISFactoring::solve_wmis(void* graph,
                                       const utils::CountdownTimer& timer) {
     // double weight = max_cliques::compute_max_weighted_independent_set(
     //     graph, weights, independent_set, min_number_leaves,
@@ -496,22 +514,39 @@ vector<int> MWISFactoring::solve_wmis(const GraphChils& graph,
     utils::g_log << "Computing max weighted independent set..." << flush;
     // TODO: Better values for solutions and seed. Keep in mind this solver does
     // not respect the min_number_leaves
-    graph.full_run(0.5, 1, 5);
-    double weight = graph.get_best_solution_weight();
+    // graph.local_run(10, 0);
+    chils_run_local_search_only(graph, 10.0, 0);
+    double weight = chils_solution_get_weight(graph);
+    // double weight = graph.get_best_solution_weight();
     utils::g_log << "done!" << endl;
 
     log << "Weight of computed independent set: " << weight << endl;
+    // log << "Solution size: " << graph.best_solution.size() << endl;
+    int size = chils_solution_get_size(graph);
+    log << "Solution size: " << size << endl;
 
-    return graph.best_solution;
+    // Logging only
+    // for (int node : graph.best_solution) {
+    //     log << node << endl;
+    // }
+
+    // return graph.best_solution;
+
+    int* arr = chils_solution_get_independent_set(graph);
+    std::vector<int> best_solution(arr, arr + size);
+    return best_solution;
 }
 
 // TODO: This is the "main" method
 void MWISFactoring::compute_factoring_() {
     // successor node IDs for all graph nodes
-    GraphChils graph{};
+    // GraphChils graph{};
+    //
+    // graph.test_run();
+    void* graph = chils_initialize();
 
     if (strategy == WMIS_STRATEGY::MCL || strategy == WMIS_STRATEGY::MCM) {
-        construct_graph_conclusive_leaves(graph);
+        // construct_graph_conclusive_leaves(graph);
     } else {
         construct_graph(graph);
     }
@@ -520,7 +555,7 @@ void MWISFactoring::compute_factoring_() {
         return;
     }
 
-    if (graph.empty()) {
+    if (chils_solution_get_size(graph)) {
         log << "WARNING: no graph nodes created, stopping." << endl;
         return;
     }

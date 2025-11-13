@@ -1,9 +1,9 @@
 #ifndef DECOUPLING_MWIS_FACTORING_H
 #define DECOUPLING_MWIS_FACTORING_H
 
+#include "chils_wrapper.h"
 #include "factoring.h"
 #include <vector>
-#include "chils_wrapper.h"
 
 namespace plugins {
 class Options;
@@ -21,7 +21,6 @@ enum class WMIS_STRATEGY {
     MCM, // maximize conclusive mobility, i.e. number of conclusive
          // actions
 };
-
 
 class MWISFactoring : public decoupling::Factoring {
     // typedef std::vector<std::vector<int>> Graph;
@@ -102,11 +101,11 @@ class MWISFactoring : public decoupling::Factoring {
                      std::vector<std::vector<size_t>>& var_to_p_leaves);
 
     void add_leaf_intersection_edges(
-        GraphChils& graph,
+        void* graph,
         const std::vector<std::vector<size_t>>& var_to_p_leaves) const;
 
     void add_outside_pre_var_edges(
-        GraphChils& graph,
+        void* graph,
         const std::vector<std::vector<size_t>>& var_to_p_leaves) const;
 
     bool fulfills_min_flexibility_and_mobility(
@@ -140,11 +139,11 @@ class MWISFactoring : public decoupling::Factoring {
     static bool has_as_pre_or_eff_on_leaf(const ActionSchema& as,
                                           const PotentialLeaf& leaf);
 
-    void construct_graph_conclusive_leaves(GraphChils& graph);
+    void construct_graph_conclusive_leaves(void* graph);
 
-    void construct_graph(GraphChils& graph);
+    void construct_graph(void* graph);
 
-    std::vector<int> solve_wmis(const GraphChils& graph,
+    std::vector<int> solve_wmis(void* graph,
                                 const utils::CountdownTimer& timer);
 
     void compute_factoring_() override;
