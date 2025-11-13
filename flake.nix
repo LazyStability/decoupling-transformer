@@ -44,6 +44,7 @@
                   [
                     # (callPackage ./default.nix { })
                     clang-tools
+                    valgrind
                     cmake
                     cppcheck
                     uncrustify
