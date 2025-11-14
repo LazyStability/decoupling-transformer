@@ -495,7 +495,8 @@ vector<int> MWISFactoring::solve_wmis(const GraphChils& graph,
     utils::g_log << "Computing max weighted independent set..." << flush;
     // TODO: Better values for solutions and seed. Keep in mind this solver does
     // not respect the min_number_leaves
-    graph.local_run(1, 5);
+    // graph.local_run(timer.get_remaining_time(), 5);
+    graph.full_run(timer.get_remaining_time(), 1, 5);
     double weight = graph.get_best_solution_weight();
     utils::g_log << "done!" << endl;
 

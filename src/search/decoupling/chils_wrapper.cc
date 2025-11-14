@@ -48,6 +48,15 @@ void GraphChils::full_run(double time_limit, int n_solutions,
     int size = chils_solution_get_size(solver);
     int* arr = chils_solution_get_independent_set(solver);
     std::cout << chils_solution_get_size(solver) << std::endl;
+    std::cout << "Weight: " << chils_solution_get_weight(solver) << std::endl;
+    std::cout << "Vertex one: "
+              << chils_solution_get_vertex_configuration(solver, 0);
+    std::cout << "Vertex two: "
+              << chils_solution_get_vertex_configuration(solver, 1);
+    std::cout << "Vertex three: "
+              << chils_solution_get_vertex_configuration(solver, 2);
+    std::cout << "Vertex four: "
+              << chils_solution_get_vertex_configuration(solver, 3);
     best_solution.assign(arr, arr + size);
 }
 void GraphChils::local_run(double time_limit, unsigned int seed) const {
@@ -64,6 +73,9 @@ void GraphChils::local_run(double time_limit, unsigned int seed) const {
               << chils_solution_get_vertex_configuration(solver, 1);
     std::cout << "Vertex three: "
               << chils_solution_get_vertex_configuration(solver, 2);
+    std::cout << "Vertex four: "
+              << chils_solution_get_vertex_configuration(solver, 3);
+
     best_solution.assign(arr, arr + size);
 }
 void GraphChils::test_run() {
@@ -82,18 +94,31 @@ void GraphChils::test_run() {
     std::cout << "Adding node weight 1" << std::endl;
 
     chils_add_edge(test_solver, 0, 1); // Edge {0, 2}
-    std::cout << "Adding edge" << std::endl;
+    std::cout << "Adding edge 0 1" << std::endl;
     chils_add_edge(test_solver, 0, 2); // Edge {2, 1}
-    std::cout << "Adding edge" << std::endl;
+    std::cout << "Adding edge 0 2" << std::endl;
     chils_add_edge(test_solver, 0, 3); // Edge {2, 1}
-    std::cout << "Adding edge" << std::endl;
+    std::cout << "Adding edge 0 3" << std::endl;
 
     // Local search is recommended for small time limits (< 5min)
-    // chils_run_local_search_only(solver, 1.0, 0);
+    // chils_run_local_search_only(test_solver, 1.0, 0);
 
     // CHILS is recommended for larger time limits (> 5min)
-    chils_run_full(test_solver, 1.0, 8, 0);
+    chils_run_full(test_solver, 1.0, 1, 0);
     std::cout << "solution found" << std::endl;
+
+    std::cout << "Vertex one: "
+              << chils_solution_get_vertex_configuration(test_solver, 0)
+              << std::endl;
+    std::cout << "Vertex two: "
+              << chils_solution_get_vertex_configuration(test_solver, 1)
+              << std::endl;
+    std::cout << "Vertex three: "
+              << chils_solution_get_vertex_configuration(test_solver, 2)
+              << std::endl;
+    std::cout << "Vertex four: "
+              << chils_solution_get_vertex_configuration(test_solver, 3)
+              << std::endl;
 
     std::cout << chils_solution_get_weight(test_solver) << std::endl;
 

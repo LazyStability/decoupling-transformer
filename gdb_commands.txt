@@ -1,2 +1,2 @@
-b mwis_factoring.cc:515
+b mwis_factoring.cc:512
 run --root-task-transform "decoupled(factoring=wmis())" --search "astar(blind())" < output.sas
