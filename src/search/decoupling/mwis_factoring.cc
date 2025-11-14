@@ -451,7 +451,6 @@ void MWISFactoring::construct_graph(GraphChils& graph) {
 
     // TODO: Finde größte länge Nachkommerstellen
     for (const auto& pleaf : potential_leaf_nodes) {
-        log << pleaf.weight << std::endl;
         graph.add_vertex((int)(pleaf.weight) * 10000);
     }
 
@@ -496,7 +495,7 @@ vector<int> MWISFactoring::solve_wmis(const GraphChils& graph,
     utils::g_log << "Computing max weighted independent set..." << flush;
     // TODO: Better values for solutions and seed. Keep in mind this solver does
     // not respect the min_number_leaves
-    graph.full_run(0.5, 1, 5);
+    graph.local_run(1, 5);
     double weight = graph.get_best_solution_weight();
     utils::g_log << "done!" << endl;
 

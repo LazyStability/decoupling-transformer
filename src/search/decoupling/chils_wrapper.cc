@@ -18,7 +18,8 @@ extern "C" {
     int chils_solution_get_vertex_configuration(void*, int);
 }
 
-GraphChils::GraphChils(): solver(chils_initialize()) {
+GraphChils::GraphChils()
+    : num_of_vertex(0), num_of_edges(0), solver(chils_initialize()) {
     std::cout << "Initialise Graph" << std::endl;
 }
 GraphChils::~GraphChils() {
