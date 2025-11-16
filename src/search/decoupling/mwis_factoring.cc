@@ -496,7 +496,7 @@ vector<int> MWISFactoring::solve_wmis(const GraphChils& graph,
     // TODO: Better values for solutions and seed. Keep in mind this solver does
     // not respect the min_number_leaves
     // graph.local_run(timer.get_remaining_time(), 5);
-    graph.full_run(timer.get_remaining_time(), 1, 5);
+    graph.full_run(timer.get_remaining_time(), 4, 5);
     double weight = graph.get_best_solution_weight();
     utils::g_log << "done!" << endl;
 
@@ -510,7 +510,7 @@ void MWISFactoring::compute_factoring_() {
     // successor node IDs for all graph nodes
     GraphChils graph{};
 
-    graph.test_run();
+    // graph.test_run();
 
     if (strategy == WMIS_STRATEGY::MCL || strategy == WMIS_STRATEGY::MCM) {
         construct_graph_conclusive_leaves(graph);

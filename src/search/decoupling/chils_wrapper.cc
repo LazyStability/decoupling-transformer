@@ -19,21 +19,15 @@ extern "C" {
 }
 
 GraphChils::GraphChils()
-    : num_of_vertex(0), num_of_edges(0), solver(chils_initialize()) {
-    std::cout << "Initialise Graph" << std::endl;
-}
+    : num_of_vertex(0), num_of_edges(0), solver(chils_initialize()) {}
 GraphChils::~GraphChils() {
-    std::cout << "Destroy Graph" << std::endl;
     chils_release(solver);
 }
 int GraphChils::add_vertex(long long weight) {
-    std::cout << "Chils add graph weight: " << weight << std::endl;
     chils_add_vertex(solver, weight);
     return num_of_vertex++;
 }
 void GraphChils::add_edge(int first_vertex, int second_vertex) {
-    std::cout << "Chils add edge between: " << second_vertex << " "
-              << first_vertex << std::endl;
     chils_add_edge(solver, second_vertex, first_vertex);
     num_of_edges++;
 }
@@ -42,39 +36,15 @@ bool GraphChils::empty() const {
 }
 void GraphChils::full_run(double time_limit, int n_solutions,
                           unsigned int seed) const {
-    std::cout << "Chils started" << std::endl;
     chils_run_full(solver, time_limit, n_solutions, seed);
-    std::cout << "Chils finished" << std::endl;
     int size = chils_solution_get_size(solver);
     int* arr = chils_solution_get_independent_set(solver);
-    std::cout << chils_solution_get_size(solver) << std::endl;
-    std::cout << "Weight: " << chils_solution_get_weight(solver) << std::endl;
-    std::cout << "Vertex one: "
-              << chils_solution_get_vertex_configuration(solver, 0);
-    std::cout << "Vertex two: "
-              << chils_solution_get_vertex_configuration(solver, 1);
-    std::cout << "Vertex three: "
-              << chils_solution_get_vertex_configuration(solver, 2);
-    std::cout << "Vertex four: "
-              << chils_solution_get_vertex_configuration(solver, 3);
     best_solution.assign(arr, arr + size);
 }
 void GraphChils::local_run(double time_limit, unsigned int seed) const {
-    std::cout << "Chils started" << std::endl;
     chils_run_local_search_only(solver, time_limit, seed);
-    std::cout << "Chils finished" << std::endl;
     int size = chils_solution_get_size(solver);
-    std::cout << "Size: " << size << std::endl;
     int* arr = chils_solution_get_independent_set(solver);
-    std::cout << "Weight: " << chils_solution_get_weight(solver) << std::endl;
-    std::cout << "Vertex one: "
-              << chils_solution_get_vertex_configuration(solver, 0);
-    std::cout << "Vertex two: "
-              << chils_solution_get_vertex_configuration(solver, 1);
-    std::cout << "Vertex three: "
-              << chils_solution_get_vertex_configuration(solver, 2);
-    std::cout << "Vertex four: "
-              << chils_solution_get_vertex_configuration(solver, 3);
 
     best_solution.assign(arr, arr + size);
 }
