@@ -28,7 +28,7 @@ int GraphChils::add_vertex(long long weight) {
     return num_of_vertex++;
 }
 void GraphChils::add_edge(int first_vertex, int second_vertex) {
-    chils_add_edge(solver, second_vertex, first_vertex);
+    chils_add_edge(solver, first_vertex, second_vertex);
     num_of_edges++;
 }
 bool GraphChils::empty() const {

@@ -15,8 +15,9 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstring>
 #include <iostream>
-#include <queue>
+#include <limits>
 
 using namespace std;
 
@@ -125,6 +126,8 @@ void MWISFactoring::add_leaf_intersection_edges(
              p_leaf_2 < potential_leaf_nodes.size(); ++p_leaf_2) {
             // we need p_leaf_1 < p_leaf_2
             if (pleaf_intersect[p_leaf_1][p_leaf_2 - p_leaf_1 - 1]) {
+                log << "chils add leaf intersection edge between: " << p_leaf_1
+                    << p_leaf_2 << std::endl;
                 graph.add_edge(p_leaf_1, p_leaf_2);
             }
         }
@@ -140,7 +143,9 @@ void MWISFactoring::add_outside_pre_var_edges(
         const PotentialLeafNode& pleaf = potential_leaf_nodes[i];
         for (int var : pleaf.outside_pre_vars) {
             for (size_t pleaf_id : var_to_p_leaves[var]) {
-                graph.add_edge(i, pleaf_id);
+                log << "chils add outside precondition edge between: "
+                    << pleaf_id << i << std::endl;
+                graph.add_edge(pleaf_id, i);
             }
         }
     }
@@ -475,6 +480,7 @@ void MWISFactoring::construct_graph(GraphChils& graph) {
                    static_cast<double>(std::numeric_limits<long long>::min()));
         long long shifted_long = static_cast<long long>(shifted_double);
         graph.add_vertex(shifted_long);
+        log << "chils add vertex with weight: " << shifted_long << std::endl;
     }
 
     if (!check_timeout()) {
