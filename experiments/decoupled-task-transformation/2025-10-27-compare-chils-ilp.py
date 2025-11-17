@@ -111,7 +111,7 @@ else:
         "transport-opt14-strips:p01.pddl",
         "transport-sat08-strips:p01.pddl",
         "transport-sat14-strips:p01.pddl",
-        "zenotravel:p01.pddl"
+        "zenotravel:p01.pddl",
 
         # Take longer
         "elevators-sat11-strips:p01.pddl",
