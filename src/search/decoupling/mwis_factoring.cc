@@ -449,9 +449,32 @@ void MWISFactoring::construct_graph(GraphChils& graph) {
 
     compute_potential_leaves();
 
-    // TODO: Finde größte länge Nachkommerstellen
+    // We find the maximum exponent and multiply each by this, since we don't
+    // really care about values but their
+    int min_exponent = std::numeric_limits<int>::max();
     for (const auto& pleaf : potential_leaf_nodes) {
-        graph.add_vertex((int)(pleaf.weight) * 10000);
+        assert(pleaf.weight >= 0 && !(std::isnan(pleaf.weight)) &&
+               !(std::isinf(pleaf.weight)));
+
+        uint64_t bits;
+        std::memcpy(&bits, &pleaf.weight, sizeof(double));
+
+        // IEEE 754 double format: 1 bit sign + 11 bits exponent + 52 bits
+        // mantissa
+        // Bit shifting similar to the quake 3 fast inverse square root alg
+        int exponent = ((bits >> 52) & 0x7FF) - 1023;
+        min_exponent = std::min(min_exponent, exponent);
+    }
+
+    for (const auto& pleaf : potential_leaf_nodes) {
+        double shifted_double = pleaf.weight * std::pow(2.0, -min_exponent);
+        // Check overflow
+        assert(shifted_double <=
+                   static_cast<double>(std::numeric_limits<long long>::max()) &&
+               shifted_double >=
+                   static_cast<double>(std::numeric_limits<long long>::min()));
+        long long shifted_long = static_cast<long long>(shifted_double);
+        graph.add_vertex(shifted_long);
     }
 
     if (!check_timeout()) {
