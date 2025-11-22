@@ -454,8 +454,9 @@ void MWISFactoring::construct_graph(GraphChils& graph) {
 
     compute_potential_leaves();
 
+    assert(std::numeric_limits<double>::is_iec559);
     // We find the maximum exponent and multiply each by this, since we don't
-    // really care about values but their
+    // really care about values but their exponent
     int min_exponent = std::numeric_limits<int>::max();
     for (const auto& pleaf : potential_leaf_nodes) {
         assert(pleaf.weight >= 0 && !(std::isnan(pleaf.weight)) &&
