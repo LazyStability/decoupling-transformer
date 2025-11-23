@@ -8,7 +8,7 @@ from pathlib import Path
 from subprocess import call
 
 
-import decoupling_parser
+import parser
 import common_setup
 
 from downward.experiment import FastDownwardExperiment
@@ -126,7 +126,7 @@ exp.add_step("parse", exp.parse)
 exp.add_fetcher(name="fetch")
 
 exp.add_parser(exp.EXITCODE_PARSER)
-exp.add_parser(decoupling_parser.DecouplingParser())
+exp.add_parser(parser.DecouplingParser())
 exp.add_parser(exp.TRANSLATOR_PARSER)
 exp.add_parser(exp.ANYTIME_SEARCH_PARSER)
 exp.add_parser(exp.PLANNER_PARSER)
