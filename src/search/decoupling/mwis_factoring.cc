@@ -131,8 +131,6 @@ void MWISFactoring::add_leaf_intersection_edges(
                 graph.add_edge(p_leaf_1, p_leaf_2);
             }
         }
-        // TODO: is this actually needed?
-        // utils::sort_unique(graph[p_leaf_1]);
     }
 }
 
@@ -149,10 +147,6 @@ void MWISFactoring::add_outside_pre_var_edges(
             }
         }
     }
-    // TODO: avoid this
-    // for (size_t i = 0; i < potential_leaf_nodes.size(); ++i) {
-    //      utils::sort_unique(graph[i]);
-    // }
 }
 
 bool MWISFactoring::is_as_leaf_irrelevant(const ActionSchema& as,
