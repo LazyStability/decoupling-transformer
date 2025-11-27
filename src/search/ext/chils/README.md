@@ -28,8 +28,9 @@ Note that the `-p N` option is necessary to run CHILS (using **N** concurrent so
 | `-b` | Blocked mode, output additional results after 10%, 50%, and 100% of the  max time/iterations | |
 | `-g path` | Path to the input graph, see input forma | | &check;
 | `-i path` | Path to the initial solution, see output format | |
+| `-f path` | Path to folder containing initial solutions | |
 | `-o path` | Path to store the best solution found, see output format | Not stored |
-| `-p N` | Run CHILS with **N** concurrent solutions | 1 (only LS) |
+| `-p N` | Run CHILS with **N** concurrent solutions, use 1 for baseline local seach | 16 |
 | `-t sec` | Timeout in seconds | 3600 (1h) |
 | `-s sec` | Alternating interval for CHILS in seconds | 10 |
 | `-q N` | Max queue size **N** after perturbe | 32 |
@@ -59,7 +60,7 @@ Examples of typical use cases are listed below. Naturally, change `-t` (time lim
 ### Baseline Local Search
 
 ```
-./CHILS -g [path]
+./CHILS -g [path] -p 1
 ```
 
 ### Sequential CHILS
@@ -85,7 +86,7 @@ And then run
 
 ## Input Format
 
-CHILS expects graphs on the METIS graph format. A graph with **N** vertices is stored using **N + 1** lines. The first line lists the number of vertices, the number of edges, and the weight type. For CHILS, the first line should use 10 as the weight type to indicate integer vertex weights. Each subsequent line first gives the weight and then lists the neighbors of that node in **sorted** order.
+CHILS expects graphs on the METIS graph format. A graph with **N** vertices is stored using **N + 1** lines. The first line lists the number of vertices, the number of edges, and the weight type. For CHILS, the first line should use 10 as the weight type to indicate integer vertex weights. Each subsequent line first gives the weight and then lists the neighbors of that node.
 
 Here is an example of a graph with 3 vertices of weight 15, 15, and 20, where the weight 20 vertex is connected to the two 15-weight vertices.
 
