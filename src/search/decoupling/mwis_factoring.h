@@ -1,9 +1,9 @@
 #ifndef DECOUPLING_MWIS_FACTORING_H
 #define DECOUPLING_MWIS_FACTORING_H
 
+#include "chils_wrapper.h"
 #include "factoring.h"
 #include <vector>
-#include "chils_wrapper.h"
 
 namespace plugins {
 class Options;
@@ -11,7 +11,7 @@ class Feature;
 } // namespace plugins
 
 namespace decoupling {
-enum class WMIS_STRATEGY {
+enum class MWIS_STRATEGY {
     MML, // maximize mobile leaves
     MMAS, // maximize mobile action schemas
     MM_OPT, // maximize mobility
@@ -21,7 +21,6 @@ enum class WMIS_STRATEGY {
     MCM, // maximize conclusive mobility, i.e. number of conclusive
          // actions
 };
-
 
 class MWISFactoring : public decoupling::Factoring {
     // typedef std::vector<std::vector<int>> Graph;
@@ -69,7 +68,7 @@ class MWISFactoring : public decoupling::Factoring {
                                   const ActionSchema& action_schema);
     };
 
-    WMIS_STRATEGY strategy;
+    MWIS_STRATEGY strategy;
 
     int min_mobility;
 

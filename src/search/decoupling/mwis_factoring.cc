@@ -42,7 +42,7 @@ void MWISFactoring::PotentialLeaf::add_leaf_only_schema(
 }
 
 MWISFactoring::MWISFactoring(const plugins::Options& opts)
-    : Factoring(opts), strategy(opts.get<WMIS_STRATEGY>("strategy")),
+    : Factoring(opts), strategy(opts.get<MWIS_STRATEGY>("strategy")),
       min_mobility(opts.get<int>("min_mobility")),
       min_flexibility(opts.get<double>("min_flexibility")),
       min_fact_flexibility(opts.get<double>("min_fact_flexibility")),
@@ -51,25 +51,25 @@ MWISFactoring::MWISFactoring(const plugins::Options& opts)
         log << endl << string(80, '*') << endl;
         log << "Using MWIS factoring with strategy: ";
         switch (strategy) {
-        case WMIS_STRATEGY::MML:
+        case MWIS_STRATEGY::MML:
             log << "maximize number of mobile leaves." << endl;
             break;
-        case WMIS_STRATEGY::MMAS:
+        case MWIS_STRATEGY::MMAS:
             log << "maximize number of mobile action schemas." << endl;
             break;
-        case WMIS_STRATEGY::MM_OPT:
+        case MWIS_STRATEGY::MM_OPT:
             log << "maximize leaf mobility (exact)." << endl;
             break;
-        case WMIS_STRATEGY::MFA:
+        case MWIS_STRATEGY::MFA:
             log << "maximize number of mobile facts." << endl;
             break;
-        case WMIS_STRATEGY::MM:
+        case MWIS_STRATEGY::MM:
             log << "maximize leaf mobility (sum)." << endl;
             break;
-        case WMIS_STRATEGY::MCL:
+        case MWIS_STRATEGY::MCL:
             log << "maximize number of mobile conclusive leaves." << endl;
             break;
-        case WMIS_STRATEGY::MCM:
+        case MWIS_STRATEGY::MCM:
             log << "maximize conclusive leaf mobility." << endl;
             break;
         default:
@@ -87,7 +87,7 @@ MWISFactoring::MWISFactoring(const plugins::Options& opts)
             << endl;
     }
 
-    if (strategy != WMIS_STRATEGY::MFA && min_fact_flexibility > 0.0) {
+    if (strategy != MWIS_STRATEGY::MFA && min_fact_flexibility > 0.0) {
         log << "Option min_fact_flexibility is only possible in "
                "combination with strategy MFA."
             << endl;
@@ -542,7 +542,7 @@ void MWISFactoring::compute_factoring_() {
 
     // graph.test_run();
 
-    if (strategy == WMIS_STRATEGY::MCL || strategy == WMIS_STRATEGY::MCM) {
+    if (strategy == MWIS_STRATEGY::MCL || strategy == MWIS_STRATEGY::MCM) {
         construct_graph_conclusive_leaves(graph);
     } else {
         construct_graph(graph);
@@ -671,25 +671,25 @@ void MWISFactoring::multiply_out_potential_leaf(
         double weight;
 
         switch (strategy) {
-        case WMIS_STRATEGY::MMAS:
+        case MWIS_STRATEGY::MMAS:
             weight = included_as.size();
             break;
-        case WMIS_STRATEGY::MFA:
+        case MWIS_STRATEGY::MFA:
             weight = compute_leaf_fact_flexibility(
                 pleaf.vars, *task, included_as, facts_to_mobility,
                 sum_fact_mobility);
             break;
-        case WMIS_STRATEGY::MML:
+        case MWIS_STRATEGY::MML:
             weight = 1;
             break;
-        case WMIS_STRATEGY::MM_OPT:
+        case MWIS_STRATEGY::MM_OPT:
             weight = 0;
             for (auto as : included_as) {
                 weight += action_schemas[as].num_actions;
             }
             weight = get_log(weight);
             break;
-        case WMIS_STRATEGY::MM:
+        case MWIS_STRATEGY::MM:
             weight = 0;
             for (auto as : included_as) {
                 weight += action_schemas[as].num_actions;
@@ -1013,7 +1013,7 @@ void MWISFactoring::compute_potential_leaves() {
 
     vector<vector<unordered_map<size_t, int>>> facts_to_mobility;
     vector<vector<int>> sum_fact_mobility;
-    if (strategy == WMIS_STRATEGY::MFA || min_fact_flexibility > 0) {
+    if (strategy == MWIS_STRATEGY::MFA || min_fact_flexibility > 0) {
         compute_fact_flexibility(facts_to_mobility, sum_fact_mobility);
     }
 
@@ -1128,7 +1128,7 @@ void MWISFactoring::add_cg_sccs(vector<PotentialLeaf>& potential_leaves,
 }
 
 void MWISFactoring::add_options_to_parser(plugins::Feature& feature) {
-    feature.add_option<WMIS_STRATEGY>(
+    feature.add_option<MWIS_STRATEGY>(
         "strategy",
         "This option determines the property of the factoring that "
         "is being "
@@ -1159,7 +1159,7 @@ void MWISFactoring::add_options_to_parser(plugins::Feature& feature) {
         "true");
 }
 
-static plugins::TypedEnumPlugin<WMIS_STRATEGY> _enum_plugin({
+static plugins::TypedEnumPlugin<MWIS_STRATEGY> _enum_plugin({
     {"MPL", "maximize number of leaves"},
     {"MML", "maximize mobile leaves"},
     {"MMAS", "maximize mobile action schemas"},
