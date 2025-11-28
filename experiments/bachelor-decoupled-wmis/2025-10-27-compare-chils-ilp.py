@@ -126,7 +126,7 @@ exp.add_step("parse", exp.parse)
 exp.add_fetcher(name="fetch")
 
 exp.add_parser(exp.EXITCODE_PARSER)
-exp.add_parser(parser.DecouplingParser())
+exp.add_parser(parser.MwisParser())
 exp.add_parser(exp.TRANSLATOR_PARSER)
 exp.add_parser(exp.ANYTIME_SEARCH_PARSER)
 exp.add_parser(exp.PLANNER_PARSER)

@@ -4,7 +4,7 @@ import re
 
 from lab.parser import Parser
 
-class DecouplingParser(Parser):
+class MwisParser(Parser):
     def __init__(self):
         Parser.__init__(self)
         self.add_pattern('number_leaf_factors', 'Number leaf factors: (.+)', required=False, type=int)
