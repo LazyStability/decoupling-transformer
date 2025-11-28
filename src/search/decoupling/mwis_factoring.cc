@@ -99,7 +99,6 @@ inline double get_log(double num_actions) {
     return log(max(1.0001, num_actions));
 }
 
-// TODO: Change this to use chils
 void MWISFactoring::add_leaf_intersection_edges(
     GraphChils& graph, const vector<vector<size_t>>& var_to_p_leaves) const {
     // non-empty intersection between potential leaves
@@ -134,7 +133,6 @@ void MWISFactoring::add_leaf_intersection_edges(
     }
 }
 
-// TODO: Change this to use chils
 void MWISFactoring::add_outside_pre_var_edges(
     GraphChils& graph, const vector<vector<size_t>>& var_to_p_leaves) const {
     for (size_t i = 0; i < potential_leaf_nodes.size(); ++i) {
@@ -519,8 +517,7 @@ vector<int> MWISFactoring::solve_wmis(const GraphChils& graph,
     utils::g_log << "Computing max weighted independent set..." << flush;
     // TODO: Better values for solutions and seed. Keep in mind this solver does
     // not respect the min_number_leaves
-    // graph.local_run(timer.get_remaining_time(), 5);
-    graph.full_run(timer.get_remaining_time(), 4, 5);
+    graph.local_run(timer.get_remaining_time(), 5);
     double weight = graph.get_best_solution_weight();
     utils::g_log << "done!" << endl;
 
