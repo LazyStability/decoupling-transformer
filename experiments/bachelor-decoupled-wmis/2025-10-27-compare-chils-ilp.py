@@ -133,7 +133,7 @@ exp.add_parser(exp.PLANNER_PARSER)
 
 exp.add_algorithm("decoupled-new", repo, rev, [
     "--search", "astar(blind())",
-    "--root-task-transform", "decoupled(factoring=wmis())" 
+    "--root-task-transform", "decoupled(factoring=wmis(min_number_leaves=1, factoring_time_limit=300))" 
 ])
 exp.add_suite(benchmarks_dir, SUITE)
 
