@@ -528,30 +528,33 @@ vector<int> MWISFactoring::solve_wmis(const GraphChils& graph,
 
 // TODO: This is the "main" method
 void MWISFactoring::compute_factoring_() {
-    // successor node IDs for all graph nodes
-    GraphChils graph{};
+    vector<int> solution;
+    {
+        // successor node IDs for all graph nodes
+        GraphChils graph{};
 
-    graph.test_run();
+        graph.test_run();
 
-    if (strategy == MWIS_STRATEGY::MCL || strategy == MWIS_STRATEGY::MCM) {
-        construct_graph_conclusive_leaves(graph);
-    } else {
-        construct_graph(graph);
+        if (strategy == MWIS_STRATEGY::MCL || strategy == MWIS_STRATEGY::MCM) {
+            construct_graph_conclusive_leaves(graph);
+        } else {
+            construct_graph(graph);
+        }
+
+        if (!check_timeout()) {
+            return;
+        }
+
+        if (graph.empty()) {
+            log << "WARNING: no graph nodes created, stopping." << endl;
+            return;
+        }
+
+        // save memory
+        Factoring::save_memory();
+
+        solution = solve_wmis(graph, factoring_timer);
     }
-
-    if (!check_timeout()) {
-        return;
-    }
-
-    if (graph.empty()) {
-        log << "WARNING: no graph nodes created, stopping." << endl;
-        return;
-    }
-
-    // save memory
-    Factoring::save_memory();
-
-    vector<int> solution = solve_wmis(graph, factoring_timer);
 
     if (solution.empty()) {
         log << "WARNING: no solution found." << endl;
