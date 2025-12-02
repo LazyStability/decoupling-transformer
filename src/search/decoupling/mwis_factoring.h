@@ -78,6 +78,8 @@ class MWISFactoring : public decoupling::Factoring {
 
     bool add_cg_sccs_;
 
+    bool chils_local_run;
+
     std::vector<std::vector<size_t>> variables_to_action_schemas;
 
     std::vector<PotentialLeafNode>

@@ -46,7 +46,8 @@ MWISFactoring::MWISFactoring(const plugins::Options& opts)
       min_mobility(opts.get<int>("min_mobility")),
       min_flexibility(opts.get<double>("min_flexibility")),
       min_fact_flexibility(opts.get<double>("min_fact_flexibility")),
-      add_cg_sccs_(opts.get<bool>("add_cg_sccs")) {
+      add_cg_sccs_(opts.get<bool>("add_cg_sccs")),
+      chils_local_run(opts.get<bool>("chils_local_run")) {
     if (log.is_at_least_normal()) {
         log << endl << string(80, '*') << endl;
         log << "Using MWIS factoring with strategy: ";
@@ -517,7 +518,14 @@ vector<int> MWISFactoring::solve_wmis(const GraphChils& graph,
     utils::g_log << "Computing max weighted independent set..." << flush;
     // TODO: Better values for solutions and seed. Keep in mind this solver does
     // not respect the min_number_leaves
-    graph.local_run(timer.get_remaining_time() - 1, 5);
+    if (chils_local_run) {
+        utils::g_log << " with local_run ... " << flush;
+        graph.local_run(timer.get_remaining_time() - 1, 5);
+    } else {
+        utils::g_log << " with full_run ... " << flush;
+        // Just do as many solutions as possible
+        graph.full_run(timer.get_remaining_time() - 1, 1000000, 5);
+    }
     double weight = graph.get_best_solution_weight();
     utils::g_log << "done!" << endl;
 
@@ -1150,6 +1158,10 @@ void MWISFactoring::add_options_to_parser(plugins::Feature& feature) {
         "add_cg_sccs",
         "If true, every SCC of the causal graph is considered a "
         "leaf candidate.",
+        "true");
+    feature.add_option<bool>(
+        "chils_local_run",
+        "If true, uses the local_run method of chils, otherwise the full run.",
         "true");
 }
 
