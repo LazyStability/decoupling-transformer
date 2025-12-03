@@ -522,9 +522,9 @@ vector<int> MWISFactoring::solve_wmis(const GraphChils& graph,
         utils::g_log << " with local_run ... " << flush;
         graph.local_run(timer.get_remaining_time() - 1, 5);
     } else {
-        utils::g_log << " with full_run 10 solutions ... " << flush;
+        utils::g_log << " with full_run 100 solutions ... " << flush;
         // Just do as many solutions as possible
-        graph.full_run(timer.get_remaining_time() - 1, 10, 5);
+        graph.full_run(timer.get_remaining_time() - 1, 100, 5);
     }
     double weight = graph.get_best_solution_weight();
     utils::g_log << "done!" << endl;
