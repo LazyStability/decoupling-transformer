@@ -541,8 +541,6 @@ void MWISFactoring::compute_factoring_() {
         // successor node IDs for all graph nodes
         GraphChils graph{};
 
-        graph.test_run();
-
         if (strategy == MWIS_STRATEGY::MCL || strategy == MWIS_STRATEGY::MCM) {
             construct_graph_conclusive_leaves(graph);
         } else {
