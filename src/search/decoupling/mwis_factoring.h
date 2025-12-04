@@ -12,6 +12,7 @@ class Feature;
 
 namespace decoupling {
 enum class MWIS_STRATEGY {
+    MPL, // maximize leaves
     MML, // maximize mobile leaves
     MMAS, // maximize mobile action schemas
     MM_OPT, // maximize mobility

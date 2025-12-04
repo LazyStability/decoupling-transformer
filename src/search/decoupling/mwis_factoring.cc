@@ -53,25 +53,25 @@ MWISFactoring::MWISFactoring(const plugins::Options& opts)
         log << "Using MWIS factoring with strategy: ";
         switch (strategy) {
         case MWIS_STRATEGY::MML:
-            log << "maximize number of mobile leaves." << endl;
+            log << "maximize number of mobile leaves.(MML)" << endl;
             break;
         case MWIS_STRATEGY::MMAS:
-            log << "maximize number of mobile action schemas." << endl;
+            log << "maximize number of mobile action schemas.(MMAS)" << endl;
             break;
         case MWIS_STRATEGY::MM_OPT:
-            log << "maximize leaf mobility (exact)." << endl;
+            log << "maximize leaf mobility (exact).(MM_OPT)" << endl;
             break;
         case MWIS_STRATEGY::MFA:
-            log << "maximize number of mobile facts." << endl;
+            log << "maximize number of mobile facts.(MFA)" << endl;
             break;
         case MWIS_STRATEGY::MM:
-            log << "maximize leaf mobility (sum)." << endl;
+            log << "maximize leaf mobility (sum).(MM)" << endl;
             break;
         case MWIS_STRATEGY::MCL:
-            log << "maximize number of mobile conclusive leaves." << endl;
+            log << "maximize number of mobile conclusive leaves.(MCL)" << endl;
             break;
         case MWIS_STRATEGY::MCM:
-            log << "maximize conclusive leaf mobility." << endl;
+            log << "maximize conclusive leaf mobility.(MCM)" << endl;
             break;
         default:
             log << "ERROR: unknown MWIS factoring strategy." << endl;
