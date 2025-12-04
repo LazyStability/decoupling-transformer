@@ -54,8 +54,8 @@ ATTRIBUTES = [
 ]
 print("Is this the bwCluster? Answer: ",BWUniEnvironment.is_present())
 if BWUniEnvironment.is_present():
-    # Satisficing
     SUITE = [
+        # Satisficing
         "agricola-sat18-strips", "airport", "assembly", "barman-sat11-strips",
         "barman-sat14-strips", "blocks", "caldera-sat18-adl",
         "caldera-split-sat18-adl", "cavediving-14-adl", "childsnack-sat14-strips",
@@ -82,6 +82,26 @@ if BWUniEnvironment.is_present():
         "transport-sat14-strips", "trucks", "trucks-strips",
         "visitall-sat11-strips", "visitall-sat14-strips",
         "woodworking-sat08-strips", "woodworking-sat11-strips", "zenotravel",
+        # Optimal
+        "agricola-opt18-strips", "airport", "barman-opt11-strips",
+        "barman-opt14-strips", "blocks", "childsnack-opt14-strips",
+        "data-network-opt18-strips", "depot", "driverlog", "elevators-opt08-strips",
+        "elevators-opt11-strips", "floortile-opt11-strips", "floortile-opt14-strips",
+        "freecell", "ged-opt14-strips", "grid", "gripper", "hiking-opt14-strips",
+        "logistics00", "logistics98", "miconic", "movie", "mprime", "mystery",
+        "nomystery-opt11-strips", "openstacks-opt08-strips", "openstacks-opt11-strips",
+        "openstacks-opt14-strips", "openstacks-strips", "organic-synthesis-opt18-strips",
+        "organic-synthesis-split-opt18-strips", "parcprinter-08-strips",
+        "parcprinter-opt11-strips", "parking-opt11-strips", "parking-opt14-strips",
+        "pathways", "pegsol-08-strips", "pegsol-opt11-strips",
+        "petri-net-alignment-opt18-strips", "pipesworld-notankage", "pipesworld-tankage",
+        "psr-small", "rovers", "satellite", "scanalyzer-08-strips",
+        "scanalyzer-opt11-strips", "snake-opt18-strips", "sokoban-opt08-strips",
+        "sokoban-opt11-strips", "spider-opt18-strips", "storage", "termes-opt18-strips",
+        "tetris-opt14-strips", "tidybot-opt11-strips", "tidybot-opt14-strips", "tpp",
+        "transport-opt08-strips", "transport-opt11-strips", "transport-opt14-strips",
+        "trucks-strips", "visitall-opt11-strips", "visitall-opt14-strips",
+        "woodworking-opt08-strips", "woodworking-opt11-strips", "zenotravel",
     ]
     ENVIRONMENT = BWUniEnvironment(
         email="qf226@stud.uni-heidelberg.de",
@@ -133,7 +153,7 @@ exp.add_parser(exp.PLANNER_PARSER)
 
 exp.add_algorithm("decoupled-new", repo, rev, [
     "--search", "astar(blind())",
-    "--root-task-transform", "decoupled(factoring=wmis(min_number_leaves=1, factoring_time_limit=300, chils_local_run=false))" 
+    "--root-task-transform", "decoupled(factoring=wmis(min_number_leaves=1, strategy=MFA, chils_local_run=false))" 
 ])
 exp.add_suite(benchmarks_dir, SUITE)
 
