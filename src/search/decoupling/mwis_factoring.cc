@@ -73,6 +73,9 @@ MWISFactoring::MWISFactoring(const plugins::Options& opts)
         case MWIS_STRATEGY::MCM:
             log << "maximize conclusive leaf mobility.(MCM)" << endl;
             break;
+        case MWIS_STRATEGY::MPL:
+            log << "maximize number of leaves.(MPL)" << endl;
+            break;
         default:
             log << "ERROR: unknown MWIS factoring strategy." << endl;
             exit_with(utils::ExitCode::SEARCH_INPUT_ERROR);
@@ -694,6 +697,9 @@ void MWISFactoring::multiply_out_potential_leaf(
             for (auto as : included_as) {
                 weight += action_schemas[as].num_actions;
             }
+            break;
+        case MWIS_STRATEGY::MPL:
+            weight = 1;
             break;
         default:
             log << "strategy not supported" << endl;
