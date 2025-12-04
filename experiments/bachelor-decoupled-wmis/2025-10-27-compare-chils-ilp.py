@@ -46,7 +46,6 @@ class BWUniEnvironment(SlurmEnvironment):
  
 repo = os.environ["DOWNWARD_REPO"]
 benchmarks_dir = os.environ["DOWNWARD_BENCHMARKS"]
-rev = "decoupling"
 ATTRIBUTES = [
     "error",
     "plan",
@@ -138,6 +137,21 @@ else:
         "transport-sat11-strips:p01.pddl",
     ]
 
+DRIVER_OPTIONS= [
+]
+
+REV_NICKS = [
+    ("decoupling", "decoupling"),
+]
+STRATEGIES=[
+    "MPL", # maximize number of leaves
+    "MML", # maximize mobile leaves
+    "MMAS", # maximize mobile action schemas
+    "MM_OPT", # maximize mobility
+    "MFA", # maximize mobile facts
+    "MM", # maximize mobility (sum)
+]
+
 exp = FastDownwardExperiment(environment=ENVIRONMENT)
 
 exp.add_step("build", exp.build)
@@ -151,10 +165,15 @@ exp.add_parser(exp.TRANSLATOR_PARSER)
 exp.add_parser(exp.ANYTIME_SEARCH_PARSER)
 exp.add_parser(exp.PLANNER_PARSER)
 
-exp.add_algorithm("decoupled-new", repo, rev, [
-    "--search", "astar(blind())",
-    "--root-task-transform", "decoupled(factoring=wmis(min_number_leaves=1, strategy=MFA, chils_local_run=false))" 
-])
+
+for rev,rev_nick in REV_NICKS:
+    for strategy in STRATEGIES:
+        algo_name = f"{rev_nick}-{strategy}" if rev_nick else strategy
+
+        exp.add_algorithm(algo_name, repo, rev, [
+            "--search", "astar(blind())",
+            "--root-task-transform",f"decoupled(factoring=wmis(min_number_leaves=1, strategy={strategy}, chils_local_run=false))"
+        ])
 exp.add_suite(benchmarks_dir, SUITE)
 
 attributes = common_setup.ATTRIBUTES
