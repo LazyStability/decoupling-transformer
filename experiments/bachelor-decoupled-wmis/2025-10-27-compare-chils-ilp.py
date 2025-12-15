@@ -50,6 +50,7 @@ benchmarks_dir = os.environ["DOWNWARD_BENCHMARKS"]
 print("Is this the bwCluster? Answer: ",BWUniEnvironment.is_present())
 if BWUniEnvironment.is_present():
     SUITE = common_setup.DEFAULT_SATISFICING_SUITE
+    DRIVER_OPTIONS= ["--search", "astar(blind())","--overall-memory-limit", "3G", "--overall-time-limit", "30m"]
     ENVIRONMENT = BWUniEnvironment(
         email="qf226@stud.uni-heidelberg.de",
         memory_per_cpu="3500M", # adapt according to needs, this is per run and should be 100MB larger than the memory limit of the solver(s)
@@ -57,6 +58,7 @@ if BWUniEnvironment.is_present():
 
 else: 
     ENVIRONMENT=LocalEnvironment(processes=2)
+    DRIVER_OPTIONS= ["--search", "astar(blind())"]
     SUITE = [
         "depot:p01.pddl",
         "driverlog:p01.pddl",
@@ -86,8 +88,6 @@ else:
     ]
 
 ATTRIBUTES = common_setup.ATTRIBUTES
-
-DRIVER_OPTIONS= ["--search", "astar(blind())","--overall-memory-limit", "3G", "--overall-time-limit", "30m"]
 
 REV_NICKS = [
     ("decoupling", "decoupling"),
