@@ -529,10 +529,12 @@ vector<int> MWISFactoring::solve_wmis(const GraphChils& graph,
         // Just do as many solutions as possible
         graph.full_run(timer.get_remaining_time() - 1, 10000, 5);
     }
-    double weight = graph.get_best_solution_weight();
+    long long weight = graph.get_best_solution_weight();
+    int size = graph.get_best_solution_size();
     utils::g_log << "done!" << endl;
 
     utils::g_log << "Weight of computed independent set: " << weight << endl;
+    utils::g_log << "Size of computed independent set: " << size << endl;
 
     return graph.best_solution;
 }

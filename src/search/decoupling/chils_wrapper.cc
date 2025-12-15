@@ -52,3 +52,6 @@ void GraphChils::local_run(double time_limit, unsigned int seed) const {
 long long GraphChils::get_best_solution_weight() const {
     return chils_solution_get_weight(solver);
 }
+int GraphChils::get_best_solution_size() const {
+    return chils_solution_get_size(solver);
+}
