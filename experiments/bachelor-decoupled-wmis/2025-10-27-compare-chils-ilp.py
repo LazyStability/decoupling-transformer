@@ -46,62 +46,10 @@ class BWUniEnvironment(SlurmEnvironment):
  
 repo = os.environ["DOWNWARD_REPO"]
 benchmarks_dir = os.environ["DOWNWARD_BENCHMARKS"]
-ATTRIBUTES = [
-    "error",
-    "plan",
-    "times"
-]
+
 print("Is this the bwCluster? Answer: ",BWUniEnvironment.is_present())
 if BWUniEnvironment.is_present():
-    SUITE = [
-        # Satisficing
-        "agricola-sat18-strips", "airport", "assembly", "barman-sat11-strips",
-        "barman-sat14-strips", "blocks", "caldera-sat18-adl",
-        "caldera-split-sat18-adl", "cavediving-14-adl", "childsnack-sat14-strips",
-        "citycar-sat14-adl", "data-network-sat18-strips", "depot", "driverlog",
-        "elevators-sat08-strips", "elevators-sat11-strips", "flashfill-sat18-adl",
-        "floortile-sat11-strips", "floortile-sat14-strips", "freecell",
-        "ged-sat14-strips", "grid", "gripper", "hiking-sat14-strips",
-        "logistics00", "logistics98", "maintenance-sat14-adl", "miconic",
-        "miconic-fulladl", "miconic-simpleadl", "movie", "mprime", "mystery",
-        "nomystery-sat11-strips", "nurikabe-sat18-adl", "openstacks",
-        "openstacks-sat08-adl", "openstacks-sat08-strips",
-        "openstacks-sat11-strips", "openstacks-sat14-strips", "openstacks-strips",
-        "optical-telegraphs", "organic-synthesis-sat18-strips",
-        "organic-synthesis-split-sat18-strips", "parcprinter-08-strips",
-        "parcprinter-sat11-strips", "parking-sat11-strips", "parking-sat14-strips",
-        "pathways", "pegsol-08-strips", "pegsol-sat11-strips", "philosophers",
-        "pipesworld-notankage", "pipesworld-tankage", "psr-large", "psr-middle",
-        "psr-small", "rovers", "satellite", "scanalyzer-08-strips",
-        "scanalyzer-sat11-strips", "schedule", "settlers-sat18-adl",
-        "snake-sat18-strips", "sokoban-sat08-strips", "sokoban-sat11-strips",
-        "spider-sat18-strips", "storage", "termes-sat18-strips",
-        "tetris-sat14-strips", "thoughtful-sat14-strips", "tidybot-sat11-strips",
-        "tpp", "transport-sat08-strips", "transport-sat11-strips",
-        "transport-sat14-strips", "trucks", "trucks-strips",
-        "visitall-sat11-strips", "visitall-sat14-strips",
-        "woodworking-sat08-strips", "woodworking-sat11-strips", "zenotravel",
-        # Optimal
-        # "agricola-opt18-strips", "airport", "barman-opt11-strips",
-        # "barman-opt14-strips", "blocks", "childsnack-opt14-strips",
-        # "data-network-opt18-strips", "depot", "driverlog", "elevators-opt08-strips",
-        # "elevators-opt11-strips", "floortile-opt11-strips", "floortile-opt14-strips",
-        # "freecell", "ged-opt14-strips", "grid", "gripper", "hiking-opt14-strips",
-        # "logistics00", "logistics98", "miconic", "movie", "mprime", "mystery",
-        # "nomystery-opt11-strips", "openstacks-opt08-strips", "openstacks-opt11-strips",
-        # "openstacks-opt14-strips", "openstacks-strips", "organic-synthesis-opt18-strips",
-        # "organic-synthesis-split-opt18-strips", "parcprinter-08-strips",
-        # "parcprinter-opt11-strips", "parking-opt11-strips", "parking-opt14-strips",
-        # "pathways", "pegsol-08-strips", "pegsol-opt11-strips",
-        # "petri-net-alignment-opt18-strips", "pipesworld-notankage", "pipesworld-tankage",
-        # "psr-small", "rovers", "satellite", "scanalyzer-08-strips",
-        # "scanalyzer-opt11-strips", "snake-opt18-strips", "sokoban-opt08-strips",
-        # "sokoban-opt11-strips", "spider-opt18-strips", "storage", "termes-opt18-strips",
-        # "tetris-opt14-strips", "tidybot-opt11-strips", "tidybot-opt14-strips", "tpp",
-        # "transport-opt08-strips", "transport-opt11-strips", "transport-opt14-strips",
-        # "trucks-strips", "visitall-opt11-strips", "visitall-opt14-strips",
-        # "woodworking-opt08-strips", "woodworking-opt11-strips", "zenotravel",
-    ]
+    SUITE = common_setup.DEFAULT_SATISFICING_SUITE
     ENVIRONMENT = BWUniEnvironment(
         email="qf226@stud.uni-heidelberg.de",
         memory_per_cpu="3500M", # adapt according to needs, this is per run and should be 100MB larger than the memory limit of the solver(s)
@@ -136,6 +84,8 @@ else:
         "elevators-sat11-strips:p01.pddl",
         "transport-sat11-strips:p01.pddl",
     ]
+
+ATTRIBUTES = common_setup.ATTRIBUTES
 
 DRIVER_OPTIONS= ["--search", "astar(blind())","--overall-memory-limit", "3G", "--overall-time-limit", "30m"]
 
@@ -174,8 +124,7 @@ for rev,rev_nick in REV_NICKS:
         ])
 exp.add_suite(benchmarks_dir, SUITE)
 
-attributes = common_setup.ATTRIBUTES
 
-exp.add_report(AbsoluteReport(attributes=attributes), outfile=f"test-all.html")
+exp.add_report(AbsoluteReport(attributes=ATTRIBUTES), outfile=f"test-all.html")
 
 exp.run_steps()
