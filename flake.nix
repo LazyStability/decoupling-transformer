@@ -48,6 +48,7 @@
                     cmake
                     cppcheck
                     uncrustify
+                    libnotify
                     mprocs
                     entr
                     # codespell

@@ -10,3 +10,5 @@ compile_commands.json
 /typings/
 .envrc
 **/data/**
+**/data-local/**
+**/data-cluster/**
