@@ -137,8 +137,7 @@ else:
         "transport-sat11-strips:p01.pddl",
     ]
 
-DRIVER_OPTIONS= [
-]
+DRIVER_OPTIONS= ["--search", "astar(blind())","--overall-memory-limit", "3G", "--overall-time-limit", "30m"]
 
 REV_NICKS = [
     ("decoupling", "decoupling"),
@@ -170,8 +169,7 @@ for rev,rev_nick in REV_NICKS:
     for strategy in STRATEGIES:
         algo_name = f"{rev_nick}-{strategy}" if rev_nick else strategy
 
-        exp.add_algorithm(algo_name, repo, rev, [
-            "--search", "astar(blind())",
+        exp.add_algorithm(algo_name, repo, rev, DRIVER_OPTIONS + [
             "--root-task-transform",f"decoupled(factoring=wmis(min_number_leaves=1, strategy={strategy}, chils_local_run=false))"
         ])
 exp.add_suite(benchmarks_dir, SUITE)
