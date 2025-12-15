@@ -16,6 +16,7 @@ from downward.experiment import FastDownwardExperiment
 from downward.reports.absolute import AbsoluteReport
 from downward.reports.compare import ComparativeReport
 from downward.reports.scatter import ScatterPlotReport
+from numpy import absolute
 
 
 DEFAULT_OPTIMAL_SUITE = [
@@ -114,7 +115,7 @@ ATTRIBUTES = [
     Attribute('number_operators', absolute=False, min_wins=True, function=sum),
     Attribute('number_axioms', absolute=False, min_wins=True, function=sum),
 
-    Attribute('number_conclusive_leaves', absolute=True, min_wins=False),
+    # Attribute('number_conclusive_leaves', absolute=True, min_wins=False),
     Attribute('number_normal_leaves', absolute=True, min_wins=False),
 
     "number_pruned_operators",
@@ -123,6 +124,10 @@ ATTRIBUTES = [
 
     Attribute('exhausted_search_space', absolute=True, min_wins=False),
 
+    # Chils attributes
+    Attribute('mwis_weight', absolute=True, min_wins=False),
+    Attribute('mwis_size', absolute=True, min_wins=False),
+    Attribute('number_chils_edges', absolute=True, min_wins=False)
 ]
    
 
