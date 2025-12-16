@@ -8,8 +8,7 @@ while [[ $# -gt 0 ]]; do
 	shift # past value
       ;;
     *)
-	LOCAL=false
-	shift # past argument
+	break
       ;;
   esac
 done
@@ -23,7 +22,7 @@ if [[ $LOCAL ]]; then
 		mv "$SCRIPT_DIR"/experiments/bachelor-decoupled-wmis/data "$SCRIPT_DIR"/experiments/bachelor-decoupled-wmis/data-cluster
 		mv "$SCRIPT_DIR"/experiments/bachelor-decoupled-wmis/data-local "$SCRIPT_DIR"/experiments/bachelor-decoupled-wmis/data
 	fi
-	uv run "$SCRIPT_DIR"/experiments/bachelor-decoupled-wmis/2025-10-27-compare-chils-ilp.py {1..5}
+	uv run "$SCRIPT_DIR"/experiments/bachelor-decoupled-wmis/2025-10-27-compare-chils-ilp.py "$@"
 else
 	echo "Evaluating cluster run..."
 	if [[ -e "$SCRIPT_DIR"/experiments/bachelor-decoupled-wmis/data-cluster ]]; then
