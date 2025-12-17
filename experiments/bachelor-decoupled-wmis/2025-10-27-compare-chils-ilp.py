@@ -90,10 +90,10 @@ else:
 ATTRIBUTES = common_setup.ATTRIBUTES
 
 REV_NICKS = [
-    ("decoupling", "decoupling"),
+    ("decoupling", "wmis", "chils_local_run=false,"),
+    ("decoupling", "lp", ""),
 ]
 STRATEGIES=[
-    "MPL", # maximize number of leaves
     "MML", # maximize mobile leaves
     "MMAS", # maximize mobile action schemas
     "MM_OPT", # maximize mobility
@@ -115,12 +115,13 @@ exp.add_parser(exp.ANYTIME_SEARCH_PARSER)
 exp.add_parser(exp.PLANNER_PARSER)
 
 
-for rev,rev_nick in REV_NICKS:
+for rev,rev_nick,extra_options in REV_NICKS:
     for strategy in STRATEGIES:
         algo_name = f"{rev_nick}-{strategy}" if rev_nick else strategy
+        algo_options = f"decoupled({rev_nick}({extra_options}min_number_leaves=1,factoring_time_limit=30,strategy={strategy}))"
 
         exp.add_algorithm(algo_name, repo, rev, DRIVER_OPTIONS + [
-            "--root-task-transform",f"decoupled(factoring=wmis(min_number_leaves=1, strategy={strategy}, chils_local_run=false))"
+            "--root-task-transform", algo_options
         ])
 exp.add_suite(benchmarks_dir, SUITE)
 
