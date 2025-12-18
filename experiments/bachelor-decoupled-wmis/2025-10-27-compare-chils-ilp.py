@@ -50,7 +50,6 @@ benchmarks_dir = os.environ["DOWNWARD_BENCHMARKS"]
 print("Is this the bwCluster? Answer: ",BWUniEnvironment.is_present())
 if BWUniEnvironment.is_present():
     SUITE = common_setup.DEFAULT_SATISFICING_SUITE
-    DRIVER_OPTIONS= ["--search", "astar(blind())","--overall-memory-limit", "3G", "--overall-time-limit", "30m"]
     ENVIRONMENT = BWUniEnvironment(
         email="qf226@stud.uni-heidelberg.de",
         memory_per_cpu="3500M", # adapt according to needs, this is per run and should be 100MB larger than the memory limit of the solver(s)
@@ -58,7 +57,6 @@ if BWUniEnvironment.is_present():
 
 else: 
     ENVIRONMENT=LocalEnvironment(processes=2)
-    DRIVER_OPTIONS= ["--search", "astar(blind())"]
     SUITE = [
         "depot:p01.pddl",
         "driverlog:p01.pddl",
@@ -88,9 +86,11 @@ else:
     ]
 
 ATTRIBUTES = common_setup.ATTRIBUTES
+COMPONONENT_OPTION = ["--search", "astar(blind())"]
+DRIVER_OPTIONS= ["--overall-memory-limit", "3G", "--overall-time-limit", "30m"]
 
 REV_NICKS = [
-    ("decoupling", "wmis", "chils_local_run=false,"),
+    ("decoupling", "wmis", "chils_local_run=true,"),
     ("decoupling", "lp", ""),
 ]
 STRATEGIES=[
@@ -118,11 +118,11 @@ exp.add_parser(exp.PLANNER_PARSER)
 for rev,rev_nick,extra_options in REV_NICKS:
     for strategy in STRATEGIES:
         algo_name = f"{rev_nick}-{strategy}" if rev_nick else strategy
-        algo_options = f"decoupled({rev_nick}({extra_options}min_number_leaves=1,factoring_time_limit=30,strategy={strategy}))"
+        algo_options = f"decoupled({rev_nick}({extra_options}min_number_leaves=1,factoring_time_limit=5,strategy={strategy}))"
 
-        exp.add_algorithm(algo_name, repo, rev, DRIVER_OPTIONS + [
-            "--root-task-transform", algo_options
-        ])
+        exp.add_algorithm(algo_name, repo, rev , [
+            "--root-task-transform", algo_options 
+        ]+ COMPONONENT_OPTION,driver_options=DRIVER_OPTIONS )
 exp.add_suite(benchmarks_dir, SUITE)
 
 

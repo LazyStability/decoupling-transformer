@@ -527,7 +527,7 @@ vector<int> MWISFactoring::solve_wmis(const GraphChils& graph,
     } else {
         utils::g_log << " with full_run 10000 solutions ... " << flush;
         // Just do as many solutions as possible
-        graph.full_run(timer.get_remaining_time() - 1, 10000, 5);
+        graph.full_run(timer.get_remaining_time() - 1, 1, 5);
     }
     long long weight = graph.get_best_solution_weight();
     int size = graph.get_best_solution_size();
@@ -680,6 +680,7 @@ void MWISFactoring::multiply_out_potential_leaf(
             weight = included_as.size();
             break;
         case MWIS_STRATEGY::MFA:
+            // TODO:  Look at this again
             weight = compute_leaf_fact_flexibility(
                 pleaf.vars, *task, included_as, facts_to_mobility,
                 sum_fact_mobility);
@@ -688,6 +689,7 @@ void MWISFactoring::multiply_out_potential_leaf(
             weight = 1;
             break;
         case MWIS_STRATEGY::MM_OPT:
+            // TODO: Build other graph
             weight = 0;
             for (auto as : included_as) {
                 weight += action_schemas[as].num_actions;
@@ -699,9 +701,6 @@ void MWISFactoring::multiply_out_potential_leaf(
             for (auto as : included_as) {
                 weight += action_schemas[as].num_actions;
             }
-            break;
-        case MWIS_STRATEGY::MPL:
-            weight = 1;
             break;
         default:
             log << "strategy not supported" << endl;
