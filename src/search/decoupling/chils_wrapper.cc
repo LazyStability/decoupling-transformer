@@ -55,3 +55,6 @@ long long GraphChils::get_best_solution_weight() const {
 int GraphChils::get_best_solution_size() const {
     return chils_solution_get_size(solver);
 }
+int GraphChils::get_num_of_vertex() const {
+    return num_of_vertex;
+}

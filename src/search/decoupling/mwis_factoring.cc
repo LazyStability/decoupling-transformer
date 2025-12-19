@@ -521,13 +521,15 @@ vector<int> MWISFactoring::solve_wmis(const GraphChils& graph,
     utils::g_log << "Computing max weighted independent set..." << flush;
     // TODO: Better values for solutions and seed. Keep in mind this solver does
     // not respect the min_number_leaves
+    double time_limit = std::min(timer.get_remaining_time() - 1,
+                                 std::pow(graph.get_num_of_vertex(), 2) / 1000);
     if (chils_local_run) {
         utils::g_log << " with local_run ... " << flush;
-        graph.local_run(timer.get_remaining_time() - 1, 5);
+        graph.local_run(time_limit, 5);
     } else {
-        utils::g_log << " with full_run 10000 solutions ... " << flush;
+        utils::g_log << " with full_run 1 solutions ... " << flush;
         // Just do as many solutions as possible
-        graph.full_run(timer.get_remaining_time() - 1, 1, 5);
+        graph.full_run(time_limit, 1, 5);
     }
     long long weight = graph.get_best_solution_weight();
     int size = graph.get_best_solution_size();

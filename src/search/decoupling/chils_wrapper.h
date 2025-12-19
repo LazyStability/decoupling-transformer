@@ -18,6 +18,7 @@ class GraphChils {
     void local_run(double time_limit, unsigned int seed) const;
     long long get_best_solution_weight() const;
     int get_best_solution_size() const;
+    int get_num_of_vertex() const;
 
  private:
     int num_of_vertex;
