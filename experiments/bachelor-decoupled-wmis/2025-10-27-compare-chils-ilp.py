@@ -38,7 +38,7 @@ class BWUniEnvironment(SlurmEnvironment):
     @classmethod
     def is_present(cls):
         node = platform.node()
-        return bool(re.match(r"uc3n991", node))
+        return bool(re.match(r"uc3n(991|990)", node))
 
 ##########
 ## Code ##
@@ -56,7 +56,7 @@ if BWUniEnvironment.is_present():
     )
 
 else: 
-    ENVIRONMENT=LocalEnvironment(processes=2)
+    ENVIRONMENT=LocalEnvironment(processes=7)
     SUITE = [
         "depot:p01.pddl",
         "driverlog:p01.pddl",
