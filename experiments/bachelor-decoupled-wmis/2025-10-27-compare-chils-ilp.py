@@ -29,7 +29,7 @@ class BWUniEnvironment(SlurmEnvironment):
 
     DEFAULT_PARTITION = "cpu"
     DEFAULT_QOS = "normal"
-    DEFAULT_TIME_LIMIT_PER_TASK = "12:00:00"
+    DEFAULT_TIME_LIMIT_PER_TASK = "18:00:00"
     # 64 cores on cpu nodes, 236G usable memory
     DEFAULT_MEMORY_PER_CPU = "3600M"
     # See slurm.conf
@@ -86,12 +86,13 @@ else:
     ]
 
 ATTRIBUTES = common_setup.ATTRIBUTES
-COMPONONENT_OPTION = ["--search", "astar(blind())"]
+COMPONONENT_OPTION = {"ff":['--evaluator', 'hff=ff(transform=adapt_costs(one))',  '--search', 'lazy_greedy([hff], preferred=[hff], cost_type=one)'],
+                      "blind":['--search', 'astar(blind())']}
 DRIVER_OPTIONS= ["--overall-memory-limit", "3G", "--overall-time-limit", "30m"]
 
 REV_NICKS = [
     ("decoupling", "wmis", "chils_local_run=true,"),
-    ("decoupling", "lp", ""),
+    # ("decoupling", "lp", ""),
 ]
 STRATEGIES=[
     "MML", # maximize mobile leaves
@@ -116,13 +117,14 @@ exp.add_parser(exp.PLANNER_PARSER)
 
 
 for rev,rev_nick,extra_options in REV_NICKS:
-    for strategy in STRATEGIES:
-        algo_name = f"{rev_nick}-{strategy}" if rev_nick else strategy
-        algo_options = f"decoupled({rev_nick}({extra_options}min_number_leaves=1,factoring_time_limit=5,strategy={strategy}))"
+    for component_name in COMPONONENT_OPTION:
+        for strategy in STRATEGIES:
+            algo_name = f"{component_name}-{rev_nick}-{strategy}" if rev_nick else strategy
+            algo_options = f"decoupled({rev_nick}({extra_options}min_number_leaves=1,factoring_time_limit=5,strategy={strategy}))"
 
-        exp.add_algorithm(algo_name, repo, rev , [
-            "--root-task-transform", algo_options 
-        ]+ COMPONONENT_OPTION,driver_options=DRIVER_OPTIONS )
+            exp.add_algorithm(algo_name, repo, rev , [
+                "--root-task-transform", algo_options 
+            ]+ COMPONONENT_OPTION[component_name],driver_options=DRIVER_OPTIONS )
 exp.add_suite(benchmarks_dir, SUITE)
 
 
