@@ -110,11 +110,8 @@ void MWISFactoring::add_leaf_intersection_edges(
     for (size_t i = 0; i < pleaf_intersect.size(); ++i) {
         pleaf_intersect[i].resize(potential_leaf_nodes.size() - i - 1, false);
     }
-    // TODO: Check for duplicates
     for (int var = 0; var < (int)task->get_num_variables(); ++var) {
         for (size_t pot_leaf_1 : var_to_p_leaves[var]) {
-            // TODO: Start by pot_leaf 1 and count up and remove the if
-            // condition
             for (size_t pot_leaf_2 : var_to_p_leaves[var]) {
                 if (pot_leaf_1 < pot_leaf_2) {
                     pleaf_intersect[pot_leaf_1][pot_leaf_2 - pot_leaf_1 - 1] =
@@ -129,8 +126,6 @@ void MWISFactoring::add_leaf_intersection_edges(
              p_leaf_2 < potential_leaf_nodes.size(); ++p_leaf_2) {
             // we need p_leaf_1 < p_leaf_2
             if (pleaf_intersect[p_leaf_1][p_leaf_2 - p_leaf_1 - 1]) {
-                log << "chils add leaf intersection edge between: " << p_leaf_1
-                    << p_leaf_2 << std::endl;
                 graph.add_edge(p_leaf_1, p_leaf_2);
             }
         }
@@ -143,8 +138,6 @@ void MWISFactoring::add_outside_pre_var_edges(
         const PotentialLeafNode& pleaf = potential_leaf_nodes[i];
         for (int var : pleaf.outside_pre_vars) {
             for (size_t pleaf_id : var_to_p_leaves[var]) {
-                log << "chils add outside precondition edge between: "
-                    << pleaf_id << i << std::endl;
                 graph.add_edge(pleaf_id, i);
             }
         }
@@ -436,7 +429,6 @@ void MWISFactoring::construct_graph_conclusive_leaves(GraphChils& graph) {
     //    }
 }
 
-// TODO: Change this method
 void MWISFactoring::construct_graph(GraphChils& graph) {
     assert(graph.empty());
 
@@ -477,7 +469,6 @@ void MWISFactoring::construct_graph(GraphChils& graph) {
                    static_cast<double>(std::numeric_limits<long long>::min()));
         long long shifted_long = static_cast<long long>(shifted_double);
         graph.add_vertex(shifted_long);
-        log << "chils add vertex with weight: " << shifted_long << std::endl;
     }
 
     if (!check_timeout()) {
@@ -541,7 +532,6 @@ vector<int> MWISFactoring::solve_wmis(const GraphChils& graph,
     return graph.best_solution;
 }
 
-// TODO: This is the "main" method
 void MWISFactoring::compute_factoring_() {
     vector<int> solution;
     {
