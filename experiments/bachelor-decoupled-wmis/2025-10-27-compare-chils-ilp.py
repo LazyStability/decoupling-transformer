@@ -137,7 +137,7 @@ for rev,rev_nick,extra_options in REV_NICKS:
             ]+ COMPONONENT_OPTION[component_name],driver_options=DRIVER_OPTIONS )
 exp.add_suite(benchmarks_dir, SUITE)
 
-# exp.add_report(ComparativeReport(attributes=ATTRIBUTES, algorithm_pairs=[(f"inf-LP-{x}", f"inf-WMIS-{x}") for x in STRATEGIES]), outfile="LP-WMIS-compare.html")
+# Comparative Report
 for component_name in COMPONONENT_OPTION:
     for i in range(0,5):
         exp.add_report(ComparativeReport(
@@ -147,35 +147,32 @@ for component_name in COMPONONENT_OPTION:
         outfile=f"{component_name}-LP-WMIS-compare{STRATEGIES[i]}.html",
         )
 
-#
-exp.add_report(
-    ScatterPlotReport(
-        attributes=["task_size"],
-        filter_algorithm=[
-            f"blind-CPLEX-{LP_STRATEGIES[1]}0.2s1M-2",
-            f"blind-wmis-{STRATEGIES[1]}"
-        ],
-        format="png",
-    ),
-    name=f"Comparison-lp-wmis-task_size-ff-{STRATEGIES[1]}",
-)
+# Plots
 for component_name in COMPONONENT_OPTION:
     for i in range(0,5):
-        #"transformation_time",
-        for attr in [ "task_size"]:
-            exp.add_report(
-                ScatterPlotReport(
-                    # scale ="linear",
-                    # scale = "symlog",
-                    scale = "log",
-                    attributes=[attr],
-                    filter_algorithm=[
-                        f"{component_name}-CPLEX-{LP_STRATEGIES[i]}0.2s1M-2",
-                        f"{component_name}-wmis-{STRATEGIES[i]}"
-                    ],
-                    format="png",
-                ),
-                name=f"Scatterplot-lp-wmis-{attr}-{component_name}-{STRATEGIES[i]}",
-            )
+        exp.add_report(
+            ScatterPlotReport(
+                scale = "symlog",
+                attributes=["transformation_time"],
+                filter_algorithm=[
+                    f"{component_name}-CPLEX-{LP_STRATEGIES[i]}0.2s1M-2",
+                    f"{component_name}-wmis-{STRATEGIES[i]}"
+                ],
+                format="png",
+            ),
+            name=f"Scatterplot-transformation_time-lp-wmis-{component_name}-{STRATEGIES[i]}",
+        )
+        exp.add_report(
+            ScatterPlotReport(
+                scale = "log",
+                attributes=["task_size"],
+                filter_algorithm=[
+                    f"{component_name}-CPLEX-{LP_STRATEGIES[i]}0.2s1M-2",
+                    f"{component_name}-wmis-{STRATEGIES[i]}"
+                ],
+                format="png",
+            ),
+            name=f"Scatterplot-task_size-lp-wmis-{component_name}-{STRATEGIES[i]}",
+        )
 exp.add_report(AbsoluteReport(attributes=ATTRIBUTES), outfile=f"test-all.html")
 exp.run_steps()
