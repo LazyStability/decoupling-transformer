@@ -101,13 +101,23 @@ STRATEGIES=[
     "MFA", # maximize mobile facts
     "MM", # maximize mobility (sum)
 ]
+LP_STRATEGIES = [
+    "L", #mml
+    "AS", #mas
+    "Mo", #mmopt
+    "F", #mfa
+    "M" # maximize mobility (sum) MM
+]
 
 exp = FastDownwardExperiment(environment=ENVIRONMENT)
 
 exp.add_step("build", exp.build)
 exp.add_step("start", exp.start_runs)
 exp.add_step("parse", exp.parse)
-exp.add_fetcher(name="fetch")
+exp.add_fetcher(name="mwis-fetcher")
+# Externally run lp experiment
+exp.add_fetcher(name='2-lp-fetcher',src=repo+'/experiments/bachelor-decoupled-wmis/lp-data/2s-lp-eval/properties')
+exp.add_fetcher(name='30-lp-fetcher',src=repo+'/experiments/bachelor-decoupled-wmis/lp-data/30s-lp-eval/properties')
 
 exp.add_parser(exp.EXITCODE_PARSER)
 exp.add_parser(parser.MwisParser())
@@ -127,7 +137,45 @@ for rev,rev_nick,extra_options in REV_NICKS:
             ]+ COMPONONENT_OPTION[component_name],driver_options=DRIVER_OPTIONS )
 exp.add_suite(benchmarks_dir, SUITE)
 
+# exp.add_report(ComparativeReport(attributes=ATTRIBUTES, algorithm_pairs=[(f"inf-LP-{x}", f"inf-WMIS-{x}") for x in STRATEGIES]), outfile="LP-WMIS-compare.html")
+for component_name in COMPONONENT_OPTION:
+    for i in range(0,5):
+        exp.add_report(ComparativeReport(
+            attributes=[ "task_size","transformation_time" ],
+            algorithm_pairs=[(f"{component_name}-CPLEX-{LP_STRATEGIES[i]}0.2s1M-2",f"{component_name}-wmis-{STRATEGIES[i]}")],
+            ),
+        outfile=f"{component_name}-LP-WMIS-compare{STRATEGIES[i]}.html",
+        )
 
+#
+exp.add_report(
+    ScatterPlotReport(
+        attributes=["task_size"],
+        filter_algorithm=[
+            f"blind-CPLEX-{LP_STRATEGIES[1]}0.2s1M-2",
+            f"blind-wmis-{STRATEGIES[1]}"
+        ],
+        format="png",
+    ),
+    name=f"Comparison-lp-wmis-task_size-ff-{STRATEGIES[1]}",
+)
+for component_name in COMPONONENT_OPTION:
+    for i in range(0,5):
+        #"transformation_time",
+        for attr in [ "task_size"]:
+            exp.add_report(
+                ScatterPlotReport(
+                    # scale ="linear",
+                    # scale = "symlog",
+                    scale = "log",
+                    attributes=[attr],
+                    filter_algorithm=[
+                        f"{component_name}-CPLEX-{LP_STRATEGIES[i]}0.2s1M-2",
+                        f"{component_name}-wmis-{STRATEGIES[i]}"
+                    ],
+                    format="png",
+                ),
+                name=f"Scatterplot-lp-wmis-{attr}-{component_name}-{STRATEGIES[i]}",
+            )
 exp.add_report(AbsoluteReport(attributes=ATTRIBUTES), outfile=f"test-all.html")
-
 exp.run_steps()
