@@ -165,6 +165,30 @@ for component_name in COMPONONENT_OPTION:
         exp.add_report(
             ScatterPlotReport(
                 scale = "log",
+                attributes=["number_leaf_factors"],
+                filter_algorithm=[
+                    f"{component_name}-CPLEX-{LP_STRATEGIES[i]}0.2s1M-2",
+                    f"{component_name}-wmis-{STRATEGIES[i]}"
+                ],
+                format="png",
+            ),
+            name=f"Scatterplot-number_leaf_factors-lp-wmis-{component_name}-{STRATEGIES[i]}",
+        )
+        exp.add_report(
+            ScatterPlotReport(
+                scale = "log",
+                attributes=["expansions"],
+                filter_algorithm=[
+                    f"{component_name}-CPLEX-{LP_STRATEGIES[i]}0.2s1M-2",
+                    f"{component_name}-wmis-{STRATEGIES[i]}"
+                ],
+                format="png",
+            ),
+            name=f"Scatterplot-expansions-lp-wmis-{component_name}-{STRATEGIES[i]}",
+        )
+        exp.add_report(
+            ScatterPlotReport(
+                scale = "log",
                 attributes=["task_size"],
                 filter_algorithm=[
                     f"{component_name}-CPLEX-{LP_STRATEGIES[i]}0.2s1M-2",
@@ -174,5 +198,5 @@ for component_name in COMPONONENT_OPTION:
             ),
             name=f"Scatterplot-task_size-lp-wmis-{component_name}-{STRATEGIES[i]}",
         )
-exp.add_report(AbsoluteReport(attributes=ATTRIBUTES), outfile=f"test-all.html")
+exp.add_report(AbsoluteReport(attributes="coverage",format="tex"), outfile=f"test-all.tex")
 exp.run_steps()
